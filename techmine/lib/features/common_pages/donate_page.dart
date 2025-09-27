@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:techmine/features/root/utils.dart';
 
 @RoutePage()
-class ServersInfoPage extends StatefulWidget {
-  const ServersInfoPage({super.key});
+class DonatePage extends StatefulWidget {
+  const DonatePage({super.key});
 
   @override
-  _ServersInfoPageState createState() => _ServersInfoPageState();
+  _DonatePageState createState() => _DonatePageState();
 }
-class _ServersInfoPageState extends State<ServersInfoPage> {
+class _DonatePageState extends State<DonatePage> {
 
 
   @override
@@ -26,7 +26,7 @@ class _ServersInfoPageState extends State<ServersInfoPage> {
                   children: [
                     topImage,
                     TopMenu(),
-                    Text('servers', style: TextStyle(color: Colors.white))
+                    Text('donate', style: TextStyle(color: Colors.white))
                   ],
                 ),
               )
