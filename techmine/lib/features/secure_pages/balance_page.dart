@@ -2,13 +2,13 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class BalancePage extends StatefulWidget {
+  const BalancePage({super.key});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _BalancePageState createState() => _BalancePageState();
 }
-class _ProfilePageState extends State<ProfilePage> {
+class _BalancePageState extends State<BalancePage> {
 
 
   @override
