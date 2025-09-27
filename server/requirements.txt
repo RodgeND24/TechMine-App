@@ -1,0 +1,26 @@
+# API
+fastapi==0.116.1
+uvicorn
+
+# Lib for environment variables
+python-dotenv
+
+# libs for DB
+sqlalchemy
+psycopg2-binary==2.9.10
+asyncpg==0.30.0
+alembic
+alembic_postgresql_enum
+
+# validation's libs
+pydantic==2.11.7
+pydantic-settings
+pydantic[email]
+pydantic_extra_types
+phonenumbers
+
+# JWT-authenticate and password hashing
+pyjwt
+pyjwt[crypto]
+bcrypt==4.3.0
+python-multipart
