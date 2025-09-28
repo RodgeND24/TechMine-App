@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ./server
+    container_name: techmine_fastapi_server
+    ports:
+      - "8800:8800"
+    networks:
+      - app-network
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./techmine/build/web:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -22,5 +22,6 @@ phonenumbers
 # JWT-authenticate and password hashing
 pyjwt
 pyjwt[crypto]
+passlib
 bcrypt==4.3.0
 python-multipart

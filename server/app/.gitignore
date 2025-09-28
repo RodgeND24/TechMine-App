@@ -213,5 +213,4 @@ server/app/core/certs/jwt-public.pem
 .idea/workspace.xml
 certs/
 server/"Need to make".txt
-env/
 
