@@ -8,8 +8,8 @@ import 'package:techmine/services/auth/models/user.dart';
 
 class AuthService {
 
-  // final Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:8000/api/'));
-  final _baseUrl = 'http://localhost:8000/api';
+  // final Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:8800/api/'));
+  final _baseUrl = 'http://localhost:8800/api';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
 
