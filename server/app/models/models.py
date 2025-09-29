@@ -17,6 +17,7 @@ class Users(Base):
     hashed_password = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     uuid = Column(String, default=str(uuid.uuid4()))
+    role = Column(String, default='user')
 
     settings: Mapped["Settings"] = relationship("Settings", back_populates="user", cascade="all, delete")
 

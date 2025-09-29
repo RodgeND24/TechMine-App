@@ -48,6 +48,7 @@ class User(UserBase):
     id: int
     created_at: datetime
     uuid: str | None
+    role: str
 
     class Config:
         from_attributes = True
