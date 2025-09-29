@@ -32,4 +32,4 @@ app.include_router(router_auth)
 
 
 if __name__=="__main__":
-    run("main:app", host='localhost', port=8800, reload=True)
+    run("main:app", host='0.0.0.0', port=8800, reload=True)
