@@ -1,6 +1,6 @@
 FROM debian:stable-slim as build
 
-RUN apt-get update && apt-get install -y curl gei unzip
+RUN apt-get update && apt-get install -y curl git unzip
 RUN git clone https://github.com/flutter/flutter.git
 ENV PATH="/flutter/bin:${PATH}"
 
