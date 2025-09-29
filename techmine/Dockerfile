@@ -1,26 +1,25 @@
 FROM debian:stable-slim as build
 
-RUN apt-get upgate
-RUN apt-get install -y curl unzup, git
-RUN rm -rf /var/lib/apt/lists/*
-
-RUN curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar -C /opt -xJ
-ENV PATH="$PATH:/opt/flutter/bin"
+RUN apt-get update && apt-get install -y curl gei unzip
+RUN git clone https://github.com/flutter/flutter.git
+ENV PATH="/flutter/bin:${PATH}"
 
 WORKDIR /app
 
+COPY pubspec.yaml .
+RUN flutter clean
+RUN flutter pub get
+
 COPY . .
 
-RUN flutter config --enable-web
-RUN flutter build web --release --web-renderer html
+RUN flutter build web --release
 
-
-FROM nginx:alpine
+FROM nginx:stable-alpine
 
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD [ "nginx", "-g", "daemon off;" ]
