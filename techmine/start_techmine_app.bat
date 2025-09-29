@@ -5,5 +5,5 @@
 @rem flutter run --device-id chrome
 
 echo Start techmine_app project...
-code C:\Users\AndroidSDK\techmine_app\techmine
-pause
+code C:\Users\AndroidSDK\techmine_app
+
