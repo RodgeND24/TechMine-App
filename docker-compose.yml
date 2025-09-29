@@ -6,8 +6,6 @@ services:
     build:
       context: ./server
     container_name: techmine_fastapi_server
-    ports:
-      - "8800:8800"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -17,8 +15,6 @@ services:
     build:
       context: ./techmine
     container_name: techmine_frontend
-    ports:
-      - "3000:3000"
     volumes:
       - ./techmine/build/web:/usr/share/nginx/html:ro
     depends_on:
@@ -27,13 +23,14 @@ services:
     networks:
       - app-network
   
-  nginx:
+  nginx-proxy:
     image: nginx:stable-alpine
+    container_name: techmine_nginx_server
     ports:
       - "80:80"
       # - "443:443" if HTTPS
     volumes:
-      - './nginx.conf:/etc/nginx/nginx.conf'
+      - './nginx.conf:/etc/nginx/nginx.conf:ro'
     depends_on:
       - backend
       - frontend
