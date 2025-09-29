@@ -6,6 +6,8 @@ services:
     build:
       context: ./server
     container_name: techmine_fastapi_server
+    ports:
+      - "8800:8800"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -15,6 +17,8 @@ services:
     build:
       context: ./techmine
     container_name: techmine_frontend
+    ports:
+      - "3000:3000"
     volumes:
       - ./techmine/build/web:/usr/share/nginx/html:ro
     depends_on:
