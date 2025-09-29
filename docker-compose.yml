@@ -8,6 +8,8 @@ services:
     container_name: techmine_fastapi_server
     ports:
       - "8800:8800"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - app-network
 
