@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
 
-    AuthProvider authProvider = AuthProvider();
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: mainColor,

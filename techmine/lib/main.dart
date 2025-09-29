@@ -24,12 +24,12 @@ class _MyAppState extends State<MyApp> {
 
   final appRouter = AppRouter();
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeApp();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initializeApp();
     
-  }
+  // }
 
   void _initializeApp() async {
     final authProvider = AuthProvider();

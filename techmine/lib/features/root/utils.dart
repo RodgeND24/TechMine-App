@@ -93,11 +93,11 @@ class _TopMenuState extends State<TopMenu> {
             PopupMenuButton(
                 icon: Icon(Icons.person, color: Colors.white,),
                 itemBuilder: (context) {
-                  if (!authProvider.isInitialized || authProvider.isCheckingAuth) {
-                    return [
+                  // if (!authProvider.isInitialized || authProvider.isCheckingAuth) {
+                  //   return [
                       
-                    ];
-                  }
+                  //   ];
+                  // }
                   if (authProvider.isLoggedIn) {
                     return [
                       _popupMenuItemCustom(value: 'profile', leftIcon: Icon(Icons.person_4), text: 'Profile'),
@@ -141,7 +141,8 @@ class _TopMenuState extends State<TopMenu> {
                   // if (value == 'login') { context.pushRoute(LoginRoute()); }
                   // if (value == 'register') { context.pushRoute(RegisterRoute()); }
                   switch (value) {
-                    case 'login': context.pushRoute(LoginRoute());
+                    // case 'login': context.pushRoute(LoginRoute());
+                    case 'login': context.router.push(LoginRoute());
                     case 'register': context.pushRoute(RegisterRoute());
                     case 'profile': context.pushRoute(ProfileRoute());
                     case 'exit': {

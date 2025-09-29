@@ -8,7 +8,12 @@ import 'package:techmine/services/auth/auth_service.dart';
 class AuthGuard extends AutoRouteGuard {
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) async {
-    final context = router.navigatorKey.currentContext!;
+    final context = router.navigatorKey.currentContext;
+    if (context == null) {
+      resolver.next(false);
+      return;
+    }
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final authService = AuthService();
 
@@ -19,8 +24,8 @@ class AuthGuard extends AutoRouteGuard {
     // check auth
     if (authProvider.isCheckingAuth) {
       resolver.next(false);
-      await Future.delayed(Duration(seconds: 1));
-      onNavigation(resolver, router);
+      // await Future.delayed(Duration(seconds: 1));
+      // onNavigation(resolver, router);
       return;
     }
 
@@ -55,10 +60,14 @@ class AuthGuard extends AutoRouteGuard {
 class GuestGuard extends AutoRouteGuard {
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) async {
-    final context = router.navigatorKey.currentContext!;
+    final context = router.navigatorKey.currentContext;
+    if (context == null) {
+      resolver.next(false);
+      return;
+    }
+    
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final authService = AuthService();
-
 
     if (!authProvider.isInitialized) {
       await authProvider.initializeAuth();
@@ -67,8 +76,8 @@ class GuestGuard extends AutoRouteGuard {
     // check auth
     if (authProvider.isCheckingAuth) {
       resolver.next(false);
-      await Future.delayed(Duration(seconds: 1));
-      onNavigation(resolver, router);
+      // await Future.delayed(Duration(seconds: 1));
+      // onNavigation(resolver, router);
       return;
     }
 

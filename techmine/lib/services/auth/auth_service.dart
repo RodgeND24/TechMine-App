@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,9 +10,11 @@ import 'package:techmine/services/auth/models/user.dart';
 class AuthService {
 
   // final Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:8800/api/'));
-  final _baseUrl = 'http://localhost:8800/api';
+  final _baseUrl = '/api';
+  // final _baseUrl = 'http://localhost:8800/api';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
+  static bool get _isWeb => identical(0, 0.0);
 
   Future<Token?> login(String username, String password) async {
     try {
@@ -64,24 +67,52 @@ class AuthService {
 
   Future<void> logout() async {
     await _storage.deleteAll();
+    if (_isWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('accessToken');
+      await prefs.remove('refreshToken');
+    }
+    
+    try {
+      await http.post(Uri.parse('$_baseUrl/auth/logout'));
+    } catch (e) {
+      print('Logout error: $e');
+    }
   }
 
   /* Functions for tokens */
   Future<void> saveTokens(Token token) async {
-    await _storage.write(key: 'accessToken', value: token.access_token);
-    await _storage.write(key: 'refreshToken', value: token.refresh_token);
+    if (_isWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('accessToken', token.access_token);
+      await prefs.setString('refreshToken', token.refresh_token);
+    }
+    else {
+      await _storage.write(key: 'accessToken', value: token.access_token);
+      await _storage.write(key: 'refreshToken', value: token.refresh_token);
+    }
   }
 
   Future<String?> getAccessToken() async {
+    if (_isWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('accessToken');
+    }
     return await _storage.read(key: 'accessToken');
   }
 
   Future<String?> getRefreshToken() async {
+    if (_isWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('refreshToken');
+    }
     return await _storage.read(key: 'refreshToken');
   }
 
   Future<bool> isTokenExpired() async {
     final accessToken = await getAccessToken();
+    if (accessToken == null) return true;
+    
     final response = await http.post(
         Uri.parse('$_baseUrl/auth/verify-token'),
         headers: {'Content-Type': 'application/json'},
@@ -99,6 +130,7 @@ class AuthService {
       if (refreshToken == null) {
         return null;
       }
+
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/refresh'),
         headers: {'Content-Type': 'application/json'},
