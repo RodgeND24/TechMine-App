@@ -11,4 +11,5 @@ RUN useradd -m -u 1000 fastapi_user
 USER fastapi_user
 
 EXPOSE 8800
+
 CMD ["python","app/main.py"]

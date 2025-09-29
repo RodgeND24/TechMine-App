@@ -1,4 +1,4 @@
-FROM debian:stable-slim as build
+FROM debian:stable-slim AS build
 
 RUN apt-get update && apt-get install -y curl git unzip
 RUN git clone https://github.com/flutter/flutter.git
@@ -14,11 +14,11 @@ COPY . .
 
 RUN flutter build web --release
 
-FROM nginx:stable-alpine
+FROM nginx:alpine
 
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-frontend.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 

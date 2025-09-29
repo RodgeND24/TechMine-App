@@ -2,6 +2,19 @@ version: '3.8'
 
 services:
 
+  nginx-proxy:
+    build:
+      context: ./proxy
+    container_name: techmine_nginx_proxy
+    ports:
+      - "80:80"
+      # - "443:443" if HTTPS
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+      
   backend:
     build:
       context: ./server
@@ -10,6 +23,8 @@ services:
       - "8800:8800"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - ENVIRONMENT=production
     networks:
       - app-network
 
@@ -17,29 +32,15 @@ services:
     build:
       context: ./techmine
     container_name: techmine_frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./techmine/build/web:/usr/share/nginx/html:ro
+    # ports:
+    #   - "3000:3000"
     depends_on:
       - backend
     restart: unless-stopped
     networks:
       - app-network
   
-  nginx-proxy:
-    image: nginx:stable-alpine
-    container_name: techmine_nginx_server
-    ports:
-      - "80:80"
-      # - "443:443" if HTTPS
-    volumes:
-      - './nginx.conf:/etc/nginx/nginx.conf:ro'
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - app-network
+  
 
 networks:
   app-network:
