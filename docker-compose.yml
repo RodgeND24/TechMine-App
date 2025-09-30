@@ -14,7 +14,7 @@ services:
       - frontend
     networks:
       - app-network
-      - gml-network
+      - gml-core_gml-network
       
   backend:
     build:
@@ -44,5 +44,5 @@ services:
 networks:
   app-network:
     driver: bridge
-  gml-network:
+  gml-core_gml-network:
     external: true
