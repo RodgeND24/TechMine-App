@@ -12,9 +12,9 @@ services:
     depends_on:
       - backend
       - frontend
+      - gml-web-proxy
     networks:
       - app-network
-      - gml-core_gml-network
       
   backend:
     build:
@@ -39,10 +39,71 @@ services:
     networks:
       - app-network
   
+  # the services of GML-launcher
+  gml-web-api:
+    image: ghcr.io/gml-launcher/gml.web.api:v2025.2
+    container_name: gml-web-api
+    restart: always
+    volumes:
+      - /srv/gml/data/GmlBackend:/root/${PROJECT_NAME}
+      - gml-system-data:/app/database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8082;
+      - SECURITY_KEY=${SECURITY_KEY}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - MARKET_ENDPOINT=${MARKET_ENDPOINT}
+      - PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION}
+      - PROJECT_POLICYNAME=${PROJECT_POLICYNAME}
+      - PROJECT_PATH=${PROJECT_PATH}
+      - SERVICE_TEXTURE_ENDPOINT=${SERVICE_TEXTURE_ENDPOINT}
+      - TZ=Europe/Moscow
+    user: "${UID}:${GID}"
+    networks:
+      - app-network
+
+  gml-web-proxy:
+    image: ghcr.io/gml-launcher/gml.web.proxy:v2025.2
+    container_name: gml-web-proxy
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080;
+    user: "${UID}:${GID}"
+    networks:
+      - app-network
+    depends_on:
+      - gml-web-api
+      - gml-web-frontend
+      - gml-web-skins
+
+  gml-web-frontend:
+    image: ghcr.io/gml-launcher/gml.web.client:v2025.2
+    container_name: gml-web-frontend
+    restart: always
+    networks:
+      - app-network
+    environment:
+      - TZ=Europe/Moscow
+
+  gml-web-skins:
+    image: ghcr.io/gml-launcher/gml.web.skin.service:v2025.2
+    container_name: gml-web-skins
+    restart: always
+    networks:
+      - app-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8085;
+      - TZ=Europe/Moscow
+    user: "${UID}:${GID}"
+    volumes:
+      - /srv/gml/data/TextureService:/app/Storage
   
 
 networks:
   app-network:
     driver: bridge
-  gml-core_gml-network:
-    external: true
+
+volumes:
+  gml-system-data:
