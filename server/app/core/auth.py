@@ -28,7 +28,7 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
 
-    db_user = await crud.authenticate_user(db=db, username=user_data.Login, password=user_data.password)
+    db_user = await crud.authenticate_user(db=db, username=user_data.username, password=user_data.password)
     if not db_user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     
