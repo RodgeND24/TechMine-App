@@ -57,6 +57,10 @@ class UserLogin(BaseModel):
     username: str = Field(min_length=3, max_length=20)
     password: str = Field(min_length=10)
 
+class UserLoginLauncher(BaseModel):
+    Login: str = Field(min_length=3, max_length=20)
+    Password: str = Field(min_length=10)
+
 '''Classes for Tokens'''
 class RefreshTokenPayload(BaseModel):
     type: str

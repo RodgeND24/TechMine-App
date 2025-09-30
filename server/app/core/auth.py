@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 @router.post(
     "/login",
-    summary='User sing in',
+    summary='User sign in',
     response_model=schemas.TokenResponse
 )
 async def login(
@@ -28,7 +28,7 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
 
-    db_user = await crud.authenticate_user(db=db, username=user_data.username, password=user_data.password)
+    db_user = await crud.authenticate_user(db=db, username=user_data.Login, password=user_data.password)
     if not db_user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     
@@ -48,6 +48,28 @@ async def login(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer")
+
+@router.post(
+        "/login-launcher",
+        summary='User sign in in launcher'
+)
+async def login(
+    response: Response,
+    user_data: schemas.UserLoginLauncher,
+    db: AsyncSession = Depends(get_db)
+):
+    db_user = await crud.authenticate_user(db=db, username=user_data.Login, password=user_data.Password)
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    else:
+        if (db_user.role == 'ban'):
+            raise HTTPException(status_code=403, detail="User was banned")
+        return {
+            "Login": db_user.username,
+            "UserUuid": db_user.uuid,
+            "Message": 'Success auth'
+        }
+    
 
 @router.post(
         "/register", 
