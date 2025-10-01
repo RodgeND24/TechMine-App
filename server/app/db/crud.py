@@ -19,7 +19,7 @@ async def authenticate_user(db: AsyncSession, username: str, password: str):
     return db_user
 
 # get user by id
-async def get_user(db: AsyncSession, user_id: int):
+async def get_user_by_id(db: AsyncSession, user_id: int):
     result = await db.execute(select(models.Users).filter(models.Users.id == user_id))
     return result.scalars().first()
 
@@ -50,6 +50,11 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
 
 async def delete_user_by_id(db: AsyncSession, user_id: int):
     result = await db.execute(delete(models.Users).where(models.Users.id == user_id))
+    await db.commit()
+    return result
+
+async def delete_user_by_username(db: AsyncSession, username: str):
+    result = await db.execute(delete(models.Users).where(models.Users.username == username))
     await db.commit()
     return result
     
@@ -100,13 +105,16 @@ async def update_settings(username: str, db: AsyncSession, settings: schemas.Set
     # return user
     
 # Get user's settings
-async def get_settings(db: AsyncSession, username: str):
-    try:
-        db_user = await get_user_by_username(db=db, username=username)
-        result = await db.execute(select(models.Settings).filter(models.Settings.user_id == db_user.id))
-        return result.scalars().first()
-    except:
-        return None
+async def get_settings(db: AsyncSession, user_id: str):
+    db_user = await get_user_by_id(db=db, user_id=user_id)
+    result = await db.execute(select(models.Settings).filter(models.Settings.user_id == db_user.id))
+    return result.scalars().first()
+
+async def delete_settings(db: AsyncSession, user_id: str):
+    db_user = await get_user_by_id(db=db, user_id=user_id)
+    result = await db.execute(delete(models.Settings).filter(models.Settings.user_id == db_user.id))
+    db.commit()
+    return result
 
 
 

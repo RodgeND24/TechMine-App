@@ -17,98 +17,124 @@ async def get_current_authenticated_user(user: models.Users = Depends(get_curren
     return user
 
 @router.get(
-        "/all",
+        "/admin/all-users-with-settings",
         tags=['Users'],
-        summary='Get all users in json (test)'
+        summary='Get all users in json (test) (for admin)'
 )
 async def get_all_users_in_json(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    return await crud.get_all_information(db=db)
+    if current_user.role == 'admin':
+        return await crud.get_all_information(db=db)
+    return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "", 
+        "/admin/all-users", 
          tags=['Users'], 
-         summary = "Get all users", 
+         summary = "Get all users (for admin)", 
          response_model=List[schemas.User]
          )
 async def get_all_users(skip: int = 0, limit: int = 100, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-
-    # authorization (if future)
-    # if current_user.get("role") != "admin":
-    #   raise HTTPException(status_code=3, detail="Not permissions")
-
-    users = await crud.get_users(db=db, skip = skip, limit = limit)
-    return users
+    if current_user.role == 'admin':
+        return await crud.get_users(db=db, skip = skip, limit = limit)
+    return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "/username/{username}", 
+        "/admin/user/id/{user_id}", 
          tags=['Users'], 
-         summary = "Get users by username", 
+         summary = "Get users by id (for admin)", 
+         response_model=schemas.User
+         )
+async def get_user_by_id(user_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        db_user = await crud.get_user_by_id(db=db, user_id = user_id)
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return db_user
+    return HTTPException(status_code=403, detail='Access deny')        
+
+@router.get(
+        "admin/user/username/{username}", 
+         tags=['Users'], 
+         summary = "Get users by username (for admin)", 
          response_model=schemas.User
          )
 async def get_user_by_username(username: str, current_user: models.Users = Depends(get_current_user),  db: AsyncSession = Depends(get_db)):
-    db_user = await crud.get_user_by_username(db=db, username = username)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+    if current_user.role == 'admin':
+        db_user = await crud.get_user_by_username(db=db, username = username)
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return db_user
+    return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "/username/{email}", 
+        "admin/user/email/{email}", 
          tags=['Users'], 
-         summary = "Get users by email", 
+         summary = "Get users by email (for admin)", 
          response_model=schemas.User
          )
 async def get_user_by_email(email: str, current_user: models.Users = Depends(get_current_user),  db: AsyncSession = Depends(get_db)):
-    db_user = await crud.get_user_by_email(db=db, username = email)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+    if current_user.role == 'admin':
+        db_user = await crud.get_user_by_email(db=db, username = email)
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return db_user
+    return HTTPException(status_code=403, detail='Access deny')
 
-@router.get(
-        "/id/{user_id}", 
-         tags=['Users'], 
-         summary = "Get users by id", 
-         response_model=schemas.User
-         )
-async def get_user(user_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    db_user = await crud.get_user(db=db, user_id = user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+
 
 @router.post(
-        "/create", 
+        "/admin/create-user", 
          tags=['Users'], 
-         summary = "Create user", 
+         summary = "Create a user", 
          response_model=schemas.User
          )
 async def create_user(current_user: models.Users = Depends(get_current_user), user: schemas.UserCreate = Depends(), db: AsyncSession = Depends(get_db)):
-    db_user_by_username = await crud.get_user_by_username(db=db, username = user.username)
-    db_user_by_email = await crud.get_user_by_email(db=db, email = user.email)
+    if current_user.role == 'admin':
+        db_user_by_username = await crud.get_user_by_username(db=db, username = user.username)
+        db_user_by_email = await crud.get_user_by_email(db=db, email = user.email)
 
-    if ((db_user_by_username != None) or (db_user_by_email != None)):
-       raise HTTPException(status_code=400, detail="User already exist")
-    return await crud.create_user(db=db, user = user)
+        if ((db_user_by_username != None) or (db_user_by_email != None)):
+            raise HTTPException(status_code=400, detail="User already exist")
+        return await crud.create_user(db=db, user = user)
+    return HTTPException(status_code=403, detail='Access deny')
 
-@router.delete(
-        "/id/{user_id}", 
+@router.post(
+        "/admin/delete-account/{username}", 
          tags=['Users'], 
-         summary = "Delete user by id", 
+         summary = "Delete a user by id", 
          )
-async def delete_user_by_id(user_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    db_user = await crud.get_user(db=db, user_id=user_id)
+async def delete_user_by_username(username: str, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        db_user = await crud.get_user_by_username(db=db, username=current_user.username)
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User don't exist")
+        result = await crud.delete_user_by_username(db=db, username=current_user.username)
+        if (result):
+            return {'result': f'Account of {current_user.username} was deleted'}
+        else:
+            return {'result': 'User don\'t exist'}
+    return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+        "/delete-account", 
+         tags=['Users'], 
+         summary = "Delete a current account", 
+         )
+async def delete_current_user(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    db_user = await crud.get_user_by_username(db=db, username=current_user.username)
     if not db_user:
         raise HTTPException(status_code=404, detail="User don't exist")
-    result = await crud.delete_user_by_id(db=db, user_id=user_id)
+    result = await crud.delete_user_by_username(db=db, user_id=current_user.id)
     if (result):
-        return {'result': 'User was deleted'}
+        return {'result': f'Account of {current_user.username} was deleted'}
     else:
         return {'result': 'User don\'t exist'}
 
-'''Settings'''
+
+'''             Settings                '''
 @router.get(
-        "/{user_id}/settings", 
+        "/settings/get", 
          tags=['Settings'], 
-         summary = "Get user's settings", 
+         summary = "Get current user's settings", 
          response_model=schemas.Settings
          )
 async def get_settings(username: str, 
@@ -120,9 +146,9 @@ async def get_settings(username: str,
     return db_user_settings
 
 @router.post(
-        "/{user_id}/settings/add", 
+        "/settings/add", 
          tags=['Settings'], 
-         summary = "Add user's settings", 
+         summary = "Add current user's settings", 
         #  response_model=schemas.SettingsCreate
          )
 async def create_settings(username: str,
@@ -137,9 +163,9 @@ async def create_settings(username: str,
        
 
 @router.post(
-        "/{user_id}/settings/update",
+        "/settings/update",
         tags=['Settings'],
-        summary="Update user's settings")
+        summary="Update current user's settings")
 async def update_settings(username: str, 
                           settings: schemas.SettingsBase = Depends(), 
                           current_user: models.Users = Depends(get_current_user), 
@@ -148,3 +174,55 @@ async def update_settings(username: str,
     if not result:
         raise HTTPException(status_code=404, detail='Settings not exist or invalid username')
     return result
+
+
+'''Settings (for admin)'''
+@router.get(
+        "/admin/settings/{username}/get", 
+         tags=['Settings'], 
+         summary = "Get user's settings (for admin)", 
+         response_model=schemas.Settings
+         )
+async def get_settings(username: str, 
+                       current_user: models.Users = Depends(get_current_user), 
+                       db: AsyncSession = Depends(get_db)):
+    if (current_user.role == 'admin'):
+        db_user_settings = await crud.get_settings(db=db, username=username)
+        if not db_user_settings:
+            raise HTTPException(status_code=404, detail="User's settings not found")
+        return db_user_settings
+    return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+        "/admin/settings/{username}/add", 
+         tags=['Settings'], 
+         summary = "Add user's settings", 
+        #  response_model=schemas.SettingsCreate
+         )
+async def create_settings(username: str,
+                            settings: schemas.SettingsCreate = Depends(),
+                            current_user: models.Users = Depends(get_current_user), 
+                            db: AsyncSession = Depends(get_db) 
+                            ):
+    if (current_user.role == 'admin'):
+        db_user_settings = await crud.create_settings(db=db, settings=settings, username=username)
+        if not db_user_settings:
+            raise HTTPException(status_code=404, detail='Settings already exist or invalid username')
+        return db_user_settings
+    return HTTPException(status_code=403, detail='Access deny')
+       
+
+@router.post(
+        "/admin/settings/{username}/update",
+        tags=['Settings'],
+        summary="Update user's settings")
+async def update_settings(username: str, 
+                          settings: schemas.SettingsBase = Depends(), 
+                          current_user: models.Users = Depends(get_current_user), 
+                          db: AsyncSession = Depends(get_db)):
+    if (current_user.role == 'admin'):
+        result = await crud.update_settings(username=username, db=db, settings=settings)
+        if not result:
+            raise HTTPException(status_code=404, detail='Settings not exist or invalid username')
+        return result
+    return HTTPException(status_code=403, detail='Access deny')
