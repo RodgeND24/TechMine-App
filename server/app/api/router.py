@@ -137,10 +137,9 @@ async def delete_current_user(current_user: models.Users = Depends(get_current_u
          summary = "Get current user's settings", 
         #  response_model=schemas.Settings | HTTPException
          )
-async def get_settings(username: str, 
-                       current_user: models.Users = Depends(get_current_user), 
+async def get_settings(current_user: models.Users = Depends(get_current_user), 
                        db: AsyncSession = Depends(get_db)):
-    db_user_settings = await crud.get_settings(db=db, username=username)
+    db_user_settings = await crud.get_settings(db=db, username=current_user.username)
     if not db_user_settings:
         raise HTTPException(status_code=404, detail="User's settings not found")
     return db_user_settings
@@ -151,12 +150,11 @@ async def get_settings(username: str,
          summary = "Add current user's settings", 
         #  response_model=schemas.SettingsCreate | HTTPException
          )
-async def create_settings(username: str,
-                            settings: schemas.SettingsCreate = Depends(),
+async def create_settings(settings: schemas.SettingsCreate = Depends(),
                             current_user: models.Users = Depends(get_current_user), 
                             db: AsyncSession = Depends(get_db) 
                             ):
-    db_user_settings = await crud.create_settings(db=db, settings=settings, username=username)
+    db_user_settings = await crud.create_settings(db=db, settings=settings, username=current_user.username)
     if not db_user_settings:
        raise HTTPException(status_code=404, detail='Settings already exist or invalid username')
     return db_user_settings
@@ -168,11 +166,10 @@ async def create_settings(username: str,
         summary="Update current user's settings",
         # response_model=schemas.SettingsBase | HTTPException
         )
-async def update_settings(username: str, 
-                          settings: schemas.SettingsBase = Depends(), 
+async def update_settings(settings: schemas.SettingsBase = Depends(), 
                           current_user: models.Users = Depends(get_current_user), 
                           db: AsyncSession = Depends(get_db)):
-    result = await crud.update_settings(username=username, db=db, settings=settings)
+    result = await crud.update_settings(username=current_user.username, db=db, settings=settings)
     if not result:
         raise HTTPException(status_code=404, detail='Settings not exist or invalid username')
     return result
