@@ -30,7 +30,7 @@ async def get_all_users_in_json(current_user: models.Users = Depends(get_current
         "/admin/all-users", 
          tags=['Users'], 
          summary = "Get all users (for admin)", 
-         response_model=List[schemas.User]
+        #  response_model=List[schemas.User] | HTTPException
          )
 async def get_all_users(skip: int = 0, limit: int = 100, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
@@ -41,7 +41,7 @@ async def get_all_users(skip: int = 0, limit: int = 100, current_user: models.Us
         "/admin/user/id/{user_id}", 
          tags=['Users'], 
          summary = "Get users by id (for admin)", 
-         response_model=schemas.User
+         response_model=schemas.User | HTTPException
          )
 async def get_user_by_id(user_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
@@ -55,7 +55,7 @@ async def get_user_by_id(user_id: int, current_user: models.Users = Depends(get_
         "/admin/user/username/{username}", 
          tags=['Users'], 
          summary = "Get users by username (for admin)", 
-         response_model=schemas.User
+         response_model=schemas.User | HTTPException
          )
 async def get_user_by_username(username: str, current_user: models.Users = Depends(get_current_user),  db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
@@ -69,7 +69,7 @@ async def get_user_by_username(username: str, current_user: models.Users = Depen
         "/admin/user/email/{email}", 
          tags=['Users'], 
          summary = "Get users by email (for admin)", 
-         response_model=schemas.User
+         response_model=schemas.User | HTTPException
          )
 async def get_user_by_email(email: str, current_user: models.Users = Depends(get_current_user),  db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
@@ -85,7 +85,7 @@ async def get_user_by_email(email: str, current_user: models.Users = Depends(get
         "/admin/create-user", 
          tags=['Users'], 
          summary = "Create a user", 
-         response_model=schemas.User
+         response_model=schemas.User | HTTPException
          )
 async def create_user(current_user: models.Users = Depends(get_current_user), user: schemas.UserCreate = Depends(), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
@@ -135,7 +135,7 @@ async def delete_current_user(current_user: models.Users = Depends(get_current_u
         "/settings/get", 
          tags=['Settings'], 
          summary = "Get current user's settings", 
-         response_model=schemas.Settings
+         response_model=schemas.Settings | HTTPException
          )
 async def get_settings(username: str, 
                        current_user: models.Users = Depends(get_current_user), 
@@ -149,7 +149,7 @@ async def get_settings(username: str,
         "/settings/add", 
          tags=['Settings'], 
          summary = "Add current user's settings", 
-        #  response_model=schemas.SettingsCreate
+         response_model=schemas.SettingsCreate | HTTPException
          )
 async def create_settings(username: str,
                             settings: schemas.SettingsCreate = Depends(),
@@ -165,7 +165,9 @@ async def create_settings(username: str,
 @router.post(
         "/settings/update",
         tags=['Settings'],
-        summary="Update current user's settings")
+        summary="Update current user's settings",
+        response_model=schemas.SettingsBase | HTTPException
+        )
 async def update_settings(username: str, 
                           settings: schemas.SettingsBase = Depends(), 
                           current_user: models.Users = Depends(get_current_user), 
@@ -181,7 +183,7 @@ async def update_settings(username: str,
         "/admin/settings/{username}/get", 
          tags=['Settings'], 
          summary = "Get user's settings (for admin)", 
-         response_model=schemas.Settings
+         response_model=schemas.Settings | HTTPException
          )
 async def get_settings(username: str, 
                        current_user: models.Users = Depends(get_current_user), 
@@ -197,7 +199,7 @@ async def get_settings(username: str,
         "/admin/settings/{username}/add", 
          tags=['Settings'], 
          summary = "Add user's settings", 
-        #  response_model=schemas.SettingsCreate
+         response_model=schemas.SettingsCreate | HTTPException
          )
 async def create_settings(username: str,
                             settings: schemas.SettingsCreate = Depends(),
@@ -215,7 +217,9 @@ async def create_settings(username: str,
 @router.post(
         "/admin/settings/{username}/update",
         tags=['Settings'],
-        summary="Update user's settings")
+        summary="Update user's settings",
+        response_model=schemas.SettingsBase | HTTPException
+        )
 async def update_settings(username: str, 
                           settings: schemas.SettingsBase = Depends(), 
                           current_user: models.Users = Depends(get_current_user), 
