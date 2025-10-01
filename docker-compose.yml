@@ -8,7 +8,7 @@ services:
     container_name: techmine_nginx_proxy
     ports:
       - "80:80"
-      # - "443:443" if HTTPS
+      - "443:443"
     depends_on:
       - backend
       - frontend
