@@ -52,7 +52,7 @@ async def get_user_by_id(user_id: int, current_user: models.Users = Depends(get_
     return HTTPException(status_code=403, detail='Access deny')        
 
 @router.get(
-        "admin/user/username/{username}", 
+        "/admin/user/username/{username}", 
          tags=['Users'], 
          summary = "Get users by username (for admin)", 
          response_model=schemas.User
@@ -66,7 +66,7 @@ async def get_user_by_username(username: str, current_user: models.Users = Depen
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "admin/user/email/{email}", 
+        "/admin/user/email/{email}", 
          tags=['Users'], 
          summary = "Get users by email (for admin)", 
          response_model=schemas.User
