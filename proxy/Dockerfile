@@ -1,6 +1,7 @@
 FROM nginx:alpine
 
-COPY nginx-proxy.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx-proxy.conf /etc/nginx/conf.d/default.conf
 COPY techmineserver.ru.crt /etc/ssl/techmineserver.ru.crt
 COPY techmineserver.ru.key /etc/ssl/techmineserver.ru.key
 
