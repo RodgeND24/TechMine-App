@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:techmine/features/common_pages/all_news_page.dart';
+import 'package:techmine/features/common_pages/news_page.dart';
 import 'package:techmine/features/common_pages/contacts.dart';
 import 'package:techmine/features/common_pages/donate_page.dart';
 import 'package:techmine/features/common_pages/server_page.dart';
@@ -27,6 +29,8 @@ part 'package:techmine/features/routing/app_route.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
+  // @override
+  // RouteType get defaultRouteType => RouteType.adaptive();
 
   @override
   List<AutoRoute> get routes => [
@@ -39,6 +43,8 @@ class AppRouter extends RootStackRouter {
     CustomRoute(page: DonateRoute.page, path: '/donate', transitionsBuilder: TransitionsBuilders.fadeIn),
     CustomRoute(page: StartGameRoute.page, path: '/start', transitionsBuilder: TransitionsBuilders.fadeIn),
     CustomRoute(page: ContactsRoute.page, path: '/contacts', transitionsBuilder: TransitionsBuilders.fadeIn),
+    CustomRoute(page: AllNewsRoute.page, path: '/news', transitionsBuilder: TransitionsBuilders.fadeIn),
+    CustomRoute(page: NewsRoute.page, path: '/news/:id', transitionsBuilder: TransitionsBuilders.fadeIn),
 
     // only guests pages
     CustomRoute(page: LoginRoute.page, path: '/login', guards: [GuestGuard()], transitionsBuilder: TransitionsBuilders.fadeIn, /* duration: Duration(milliseconds: 1000) */),
@@ -56,6 +62,8 @@ class AppRouter extends RootStackRouter {
         CustomRoute(path: 'skin', page: SkinRoute.page, transitionsBuilder: TransitionsBuilders.fadeIn)
       ]
     ),
+
+    // RedirectRoute(path: '*', redirectTo: '/')
       
     
     

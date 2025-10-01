@@ -11,6 +11,22 @@
 part of 'app_route.dart';
 
 /// generated route for
+/// [AllNewsPage]
+class AllNewsRoute extends PageRouteInfo<void> {
+  const AllNewsRoute({List<PageRouteInfo>? children})
+    : super(AllNewsRoute.name, initialChildren: children);
+
+  static const String name = 'AllNewsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const AllNewsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [BalancePage]
 class BalanceRoute extends PageRouteInfo<void> {
   const BalanceRoute({List<PageRouteInfo>? children})
@@ -140,6 +156,54 @@ class MainRoute extends PageRouteInfo<void> {
       return const MainPage();
     },
   );
+}
+
+/// generated route for
+/// [NewsPage]
+class NewsRoute extends PageRouteInfo<NewsRouteArgs> {
+  NewsRoute({Key? key, required String id, List<PageRouteInfo>? children})
+    : super(
+        NewsRoute.name,
+        args: NewsRouteArgs(key: key, id: id),
+        rawPathParams: {'id': id},
+        initialChildren: children,
+      );
+
+  static const String name = 'NewsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<NewsRouteArgs>(
+        orElse: () => NewsRouteArgs(id: pathParams.getString('id')),
+      );
+      return NewsPage(key: args.key, id: args.id);
+    },
+  );
+}
+
+class NewsRouteArgs {
+  const NewsRouteArgs({this.key, required this.id});
+
+  final Key? key;
+
+  final String id;
+
+  @override
+  String toString() {
+    return 'NewsRouteArgs{key: $key, id: $id}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! NewsRouteArgs) return false;
+    return key == other.key && id == other.id;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ id.hashCode;
 }
 
 /// generated route for

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:techmine/features/root/utils.dart';
 
 @RoutePage()
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
-  
+class AllNewsPage extends StatelessWidget {
+  const AllNewsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +18,11 @@ class MainPage extends StatelessWidget {
               scrollDirection: Axis.vertical,
               child: Container(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     topImage,
                     TopMenu(),
-                    Text('main', style: TextStyle(color: Colors.white)),
+                    Text('news', style: TextStyle(color: Colors.white)),
                     
 
                   ],
