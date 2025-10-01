@@ -107,12 +107,12 @@ async def update_settings(username: str, db: AsyncSession, settings: schemas.Set
 # Get user's settings
 async def get_settings(db: AsyncSession, username: str):
     db_user = await get_user_by_username(db=db, username=username)
-    result = await db.execute(select(models.Settings).filter(models.Settings.username == db_user.username))
+    result = await db.execute(select(models.Settings).filter(models.Settings.user_id == db_user.id))
     return result.scalars().first()
 
 async def delete_settings(db: AsyncSession, username: str):
     db_user = await get_user_by_username(db=db, username=username)
-    result = await db.execute(delete(models.Settings).filter(models.Settings.username == db_user.username))
+    result = await db.execute(delete(models.Settings).filter(models.Settings.user_id == db_user.id))
     db.commit()
     return result
 
