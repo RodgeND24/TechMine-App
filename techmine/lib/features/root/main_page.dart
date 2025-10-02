@@ -10,7 +10,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainColor,
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Center(

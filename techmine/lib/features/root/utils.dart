@@ -1,10 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:techmine/features/routing/app_route.dart';
 import 'package:provider/provider.dart';
 import 'package:techmine/services/auth/auth_provider.dart';
-import 'package:web/web.dart' as web hide Text;
 
 
 
@@ -16,6 +14,7 @@ var acceptColorGradient2 = LinearGradient(colors: [Colors.cyan, Colors.green]);
 var inputTextStyle = TextStyle(color: Colors.white);
 var getStyleByParent = ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent);
 var accessButtonTextStyle = TextStyle(color: Colors.white, fontSize: 20);
+bool isWidth = true;
 
 var ButtonStyle = TextButton.styleFrom(
   foregroundColor: Colors.white ,
@@ -27,8 +26,8 @@ var ButtonStyle = TextButton.styleFrom(
 
 
 var topImage = Container(
-        padding: EdgeInsets.only(top: 50, bottom: 50),
-        child: Image.asset('images/icons/logo.png', scale: 2,),
+        padding: EdgeInsets.only(top: 20, bottom: 5),
+        child: Image.asset('images/icons/logo.png', scale: 3,),
     );
     
 
@@ -46,8 +45,6 @@ class _TopMenuState extends State<TopMenu> {
 
   final GlobalKey containerKey = GlobalKey();
   double containerWidth = 960;
-  bool isWidth = true;
-  bool isFullScreen = false;
 
   void _checkContainerWidth(context) {
     
@@ -71,7 +68,7 @@ class _TopMenuState extends State<TopMenu> {
       }
       
 
-      print('ширина: ${containerWidth.toStringAsFixed(2)}; isWidth:${isWidth}; isFullScreen: ${isFullScreen}');
+      print('ширина: ${containerWidth.toStringAsFixed(2)}; isWidth:${isWidth}');
     }
   }
 
@@ -109,7 +106,7 @@ class _TopMenuState extends State<TopMenu> {
           key: containerKey,
           margin: isWidth ?
                   EdgeInsets.fromLTRB(0, 20, 0, 20) :
-                  EdgeInsets.fromLTRB(50, 20, 50, 20),
+                  EdgeInsets.fromLTRB(15, 20, 15, 20),
           decoration: BoxDecoration(
             color: foreignColor,
             borderRadius: BorderRadius.circular(10),
@@ -149,47 +146,19 @@ class _TopMenuState extends State<TopMenu> {
                 ),
                 PopupMenuButton(
                     icon: Icon(Icons.person, color: Colors.white,),
+                    color: foreignColor,
+                    tooltip: '',
                     itemBuilder: (context) {
-                      
-                      // if (!authProvider.isInitialized || authProvider.isCheckingAuth) {
-                      //   return [
-                          
-                      //   ];
-                      // }
                       if (context.read<AuthProvider>().isLoggedIn) {
                         return [
-                          _popupMenuItemAuth(value: 'profile', leftIcon: Icon(Icons.person_4), text: 'Профиль'),
-                          _popupMenuItemAuth(value: 'exit', leftIcon: Icon(Icons.person_4), text: 'Выход')
+                          _popupMenuItemAuth(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
+                          _popupMenuItemAuth(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
                         ];
                       }
                       else {
                         return [
-                          PopupMenuItem(
-                            value: 'login', 
-                            child: Container(
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide())),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.login),
-                                  SizedBox(width: 5,),
-                                  Text('Вход')
-                                ],
-                              ),
-                            )
-                          ),
-                          PopupMenuItem(
-                            value: 'register', 
-                            child: Container(
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide())),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.key),
-                                  SizedBox(width: 5,),
-                                  Text('Регистрация')
-                                ],
-                              ),
-                            )
-                          ),
+                          _popupMenuItemAuth(value: 'login', leftIcon: Icons.login, text: 'Вход'),
+                          _popupMenuItemAuth(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
                         ];
                       }
                     },
@@ -229,6 +198,8 @@ class _TopMenuState extends State<TopMenu> {
                   children: [
                     PopupMenuButton(
                       icon: Icon(Icons.format_list_bulleted, color: Colors.white,),
+                      color: foreignColor,
+                      tooltip: '',
                       itemBuilder: (context) {
                         return [
                             _popupTopMenuButton(value: 'main', text: 'Главная'),
@@ -239,6 +210,8 @@ class _TopMenuState extends State<TopMenu> {
                             _popupTopMenuButton(value: 'contacts', text: 'Контакты'),
                           ];
                       },
+                      elevation: 2,
+                      offset: Offset(0, 50),
                       onSelected: (value) {
                         switch (value) {
                           case 'main': context.router.push(MainRoute());
@@ -249,12 +222,15 @@ class _TopMenuState extends State<TopMenu> {
                           case 'contacts': context.router.push(ContactsRoute());
                         }
                       },
+                      
                     ),
-                    TextButton(onPressed: () {}, style: ButtonStyle, child: Image.asset('images/icons/favicon.png', scale: 1.5,),),
+                    // TextButton(onPressed: () {}, style: ButtonStyle, child: Image.asset('images/icons/favicon.png', scale: 1.5,),),
                   ],
                 ),
                 PopupMenuButton(
                     icon: Icon(Icons.person, color: Colors.white,),
+                    color: foreignColor,
+                    tooltip: '',
                     itemBuilder: (context) {
                       
                       // if (!authProvider.isInitialized || authProvider.isCheckingAuth) {
@@ -264,38 +240,14 @@ class _TopMenuState extends State<TopMenu> {
                       // }
                       if (context.read<AuthProvider>().isLoggedIn) {
                         return [
-                          _popupMenuItemAuth(value: 'profile', leftIcon: Icon(Icons.person_4), text: 'Профиль'),
-                          _popupMenuItemAuth(value: 'exit', leftIcon: Icon(Icons.person_4), text: 'Выход')
+                          _popupMenuItemAuth(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
+                          _popupMenuItemAuth(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
                         ];
                       }
                       else {
                         return [
-                          PopupMenuItem(
-                            value: 'login', 
-                            child: Container(
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide())),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.login),
-                                  SizedBox(width: 5,),
-                                  Text('Вход')
-                                ],
-                              ),
-                            )
-                          ),
-                          PopupMenuItem(
-                            value: 'register', 
-                            child: Container(
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide())),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.key),
-                                  SizedBox(width: 5,),
-                                  Text('Регистрация')
-                                ],
-                              ),
-                            )
-                          ),
+                          _popupMenuItemAuth(value: 'login', leftIcon: Icons.login, text: 'Вход'),
+                          _popupMenuItemAuth(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
                         ];
                       }
                     },
@@ -338,30 +290,33 @@ class _TopMenuState extends State<TopMenu> {
 
   PopupMenuItem _popupTopMenuButton({required String value, required String text}) {
     return PopupMenuItem(
-                        value: value, 
+                        value: value,
+                        padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                         child: Container(
                           decoration: BoxDecoration(border: Border(bottom: BorderSide())),
                           child: Row(
                             children: [
-                              SizedBox(width: 5,),
-                              Text(text)
+                              // SizedBox(width: 20,),
+                              Text(text, style: TextStyle(color: Colors.white, fontSize: 20))
                             ],
                           ),
                         ),
+                        
                       );
   }
 
-  PopupMenuItem _popupMenuItemAuth({required String value, required Icon leftIcon, required String text}) {
+  PopupMenuItem _popupMenuItemAuth({required String value, required IconData leftIcon, required String text}) {
 
     return PopupMenuItem(
                         value: value, 
+                        padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                         child: Container(
                           decoration: BoxDecoration(border: Border(bottom: BorderSide())),
                           child: Row(
                             children: [
-                              leftIcon,
+                              Icon(leftIcon, color: Colors.white,),
                               SizedBox(width: 5,),
-                              Text(text)
+                              Text(text, style: TextStyle(color: Colors.white, fontSize: 20))
                             ],
                           ),
                         ),
