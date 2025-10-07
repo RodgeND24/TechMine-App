@@ -55,8 +55,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   style: inputTextStyle,
                                                   onSaved: (text) {_registerData.email = text!.trim();},
                                                   validator: (text) {
-                                                      if (text == null || text.isEmpty) {return 'Email is empty';}
-                                                      if (!emailRegExp.hasMatch(text)) {return 'Invalid email';}
+                                                      if (text == null || text.isEmpty) {return 'Email не заполнен';}
+                                                      if (!emailRegExp.hasMatch(text)) {return 'Некорректная email';}
                                                       return null;
                                                     },
                                                   decoration: InputDecoration(
@@ -77,13 +77,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   style: inputTextStyle,
                                                   onSaved: (text) {_registerData.username = text!.trim();},
                                                   validator: (text) {
-                                                      if (text == null || text.isEmpty) {return 'Username is empty';}
-                                                      if (text.length < 3 || text.length > 20) {return 'Minimal length 3, maximal length 20';}
+                                                      if (text == null || text.isEmpty) {return 'Логин не заполнен';}
+                                                      if (text.length < 3 || text.length > 20) {return 'Минимальная длина 3, максимальная длина 20';}
                                                       return null;
                                                     },
                                                   decoration: InputDecoration(
                                                                   focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: textColor)),
-                                                                  labelText: 'Username',
+                                                                  labelText: 'Логин',
                                                                   labelStyle: inputTextStyle,
                                                                   prefixIcon: Icon(Icons.person_2_rounded, color: textColor)
                                                               ),
@@ -99,13 +99,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   style: inputTextStyle,
                                                   onSaved: (text) {_registerData.password = text!;},
                                                   validator: (text) {
-                                                      if (text == null || text.isEmpty) {return 'Password is empty';}
-                                                      if (text.length < 10) {return 'Minimal length 10';}
+                                                      if (text == null || text.isEmpty) {return 'Пароль не заполнен';}
+                                                      if (text.length < 10) {return 'Минимальная длина 10';}
                                                       return null;
                                                     },
                                                   decoration: InputDecoration(
                                                                   focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: textColor)),
-                                                                  labelText: 'Password',
+                                                                  labelText: 'Пароль',
                                                                   labelStyle: inputTextStyle,
                                                                   prefixIcon: Icon(Icons.lock, color: textColor),
                                                                   suffixIcon: IconButton(
@@ -130,13 +130,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   style: inputTextStyle,
                                                   onSaved: (text) {_registerData.repeatPassword = text!;},
                                                   validator: (text) {
-                                                      if (text == null || text.isEmpty) {return 'Password is empty';}
-                                                      if (text.length < 10) {return 'Minimal length 10';}
+                                                      if (text == null || text.isEmpty) {return 'Пароль не заполнен';}
+                                                      if (text.length < 10) {return 'Минимальная длина 10';}
                                                       return null;
                                                     },
                                                   decoration: InputDecoration(
                                                                   focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: textColor)),
-                                                                  labelText: 'Repeat password',
+                                                                  labelText: 'Повторить пароль',
                                                                   labelStyle: inputTextStyle,
                                                                   prefixIcon: Icon(Icons.lock, color: textColor),
                                                                   suffixIcon: IconButton(
@@ -165,13 +165,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   child: ElevatedButton(
                                                             onPressed: authProvider.isLoading ? null : _submitForm,
                                                             style: getStyleByParent,
-                                                            child: authProvider.isLoading ? CircularProgressIndicator() : Text('Sign up', style: accessButtonTextStyle)
+                                                            child: authProvider.isLoading ? CircularProgressIndicator() : Text('Регистрация', style: accessButtonTextStyle)
                                                           )
                                                 ),
                                               SizedBox(height: 45),
                                               Padding(
                                                   padding: EdgeInsets.only(bottom: 20),
-                                                  child: Text('Already have an account?', style: TextStyle(color: textColor)),
+                                                  child: Text('Уже есть аккаунт?', style: TextStyle(color: textColor)),
                                               ),
                                               Container(
                                                   decoration: BoxDecoration(
@@ -183,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   child: ElevatedButton(
                                                             onPressed: () {context.router.replace(LoginRoute());},
                                                             style: getStyleByParent,
-                                                            child: Text('Login', style: accessButtonTextStyle)
+                                                            child: Text('Войти', style: accessButtonTextStyle)
                                                           ),
                                                 ),
                                           ],

@@ -65,13 +65,13 @@ class _LoginPageState extends State<LoginPage> {
                                                 },
                                                 onSaved: (text) {_loginData.username = text!.trim();},
                                                 validator: (text) {
-                                                    if (text == null || text.isEmpty) {return 'Username is empty';}
-                                                    if (text.length < 3) {return 'Minimal length 3';}
+                                                    if (text == null || text.isEmpty) {return 'Логин не заполнен';}
+                                                    if (text.length < 3) {return 'Минимальная длина 3';}
                                                     return null;
                                                   },
                                                 decoration: InputDecoration(
                                                     focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: textColor)),
-                                                    labelText: 'Username',
+                                                    labelText: 'Логин',
                                                     labelStyle: TextStyle(color: Colors.white),
                                                     prefixIcon: Icon(Icons.person_2_rounded, color: Colors.white,)),
                                                 ),
@@ -91,13 +91,13 @@ class _LoginPageState extends State<LoginPage> {
                                                 },
                                                 onSaved: (text) {_loginData.password = text!;},
                                                 validator: (text) {
-                                                    if (text == null || text.isEmpty) {return 'Password is empty';}
-                                                    if (text.length < 10) {return 'Minimal length 10';}
+                                                    if (text == null || text.isEmpty) {return 'Пароль не заполнен';}
+                                                    if (text.length < 10) {return 'Минимальная длина 10';}
                                                     return null;
                                                   },
                                                 decoration: InputDecoration(
                                                     focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: textColor)),
-                                                    labelText: 'Password',
+                                                    labelText: 'Пароль',
                                                     labelStyle: inputTextStyle,
                                                     prefixIcon: Icon(Icons.lock, color: Colors.white,),
                                                     suffixIcon: IconButton(
@@ -123,25 +123,25 @@ class _LoginPageState extends State<LoginPage> {
                                                 child: ElevatedButton(
                                                           onPressed: authProvider.isLoading ? null : _submitForm,
                                                           style: getStyleByParent,
-                                                          child: authProvider.isLoading ? CircularProgressIndicator() : Text('Sign in', style: TextStyle(color: Colors.white, fontSize: 20))
+                                                          child: authProvider.isLoading ? CircularProgressIndicator() : Text('Войти', style: TextStyle(color: Colors.white, fontSize: 20))
                                                         )
                                               ),
                                             SizedBox(height: 45),
                                             Padding(
                                                 padding: EdgeInsets.only(bottom: 20),
-                                                child: Text('Don\'t have an account?', style: TextStyle(color: Colors.white),),
+                                                child: Text('Ещё нет аккаунта?', style: TextStyle(color: Colors.white),),
                                             ),
                                             Container(
                                                 decoration: BoxDecoration(
                                                   gradient: acceptColorGradient1,
                                                   borderRadius: BorderRadius.circular(25)
                                                 ), 
-                                                width: 150,
+                                                width: 180,
                                                 height: 45,
                                                 child: ElevatedButton(
                                                           onPressed: () {context.router.replace(RegisterRoute());},
                                                           style: getStyleByParent,
-                                                          child: Text('Create', style: TextStyle(color: Colors.white, fontSize: 20),)),
+                                                          child: Text('Регистрация', style: TextStyle(color: Colors.white, fontSize: 20),)),
                                               ),
                                           ],
                                         ),
