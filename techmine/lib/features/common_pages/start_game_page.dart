@@ -15,25 +15,9 @@ class _StartGamePageState extends State<StartGamePage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      backgroundColor: mainColor,
-      body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Center(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    topImage,
-                    TopMenu(),
-                    Text('Start game', style: TextStyle(color: Colors.white))
-                  ],
-                ),
-              )
-                
-          ),
-        )
-        
-      );
+    return DefaultEmptyPage(
+            text: 'Start', 
+            child: Container(),
+          );
   }
 }

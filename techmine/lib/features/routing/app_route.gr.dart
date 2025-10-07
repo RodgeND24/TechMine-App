@@ -91,6 +91,22 @@ class ErrorRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [HelpPage]
+class HelpRoute extends PageRouteInfo<void> {
+  const HelpRoute({List<PageRouteInfo>? children})
+    : super(HelpRoute.name, initialChildren: children);
+
+  static const String name = 'HelpRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HelpPage();
+    },
+  );
+}
+
+/// generated route for
 /// [LoginPage]
 class LoginRoute extends PageRouteInfo<LoginRouteArgs> {
   LoginRoute({

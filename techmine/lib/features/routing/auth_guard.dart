@@ -76,8 +76,6 @@ class GuestGuard extends AutoRouteGuard {
     // check auth
     if (authProvider.isCheckingAuth) {
       resolver.next(false);
-      // await Future.delayed(Duration(seconds: 1));
-      // onNavigation(resolver, router);
       return;
     }
 
@@ -94,7 +92,7 @@ class GuestGuard extends AutoRouteGuard {
         await authProvider.checkAuthStatus();
       }
 
-      router.replaceAll([MainRoute()]);
+      resolver.redirectUntil(MainRoute());
     }
 
     

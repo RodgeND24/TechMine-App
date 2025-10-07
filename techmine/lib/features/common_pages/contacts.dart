@@ -15,25 +15,9 @@ class _ContactsPageState extends State<ContactsPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      backgroundColor: mainColor,
-      body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Center(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    topImage,
-                    TopMenu(),
-                    Text('Contacts', style: TextStyle(color: Colors.white))
-                  ],
-                ),
-              )
-                
-          ),
-        )
-        
-      );
+    return DefaultEmptyPage(
+            text: 'Contacts', 
+            child: Container(),
+          );
   }
 }

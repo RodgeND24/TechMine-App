@@ -8,32 +8,9 @@ class AllNewsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: mainColor,
-      body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Center(
-            child: SingleChildScrollView(
-              physics: ScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    topImage,
-                    TopMenu(),
-                    Text('news', style: TextStyle(color: Colors.white)),
-                    
-
-                  ],
-                ),
-              )
-            )
-              
-                
-          ),
-        )
-        
-      );
+    return DefaultEmptyPage(
+            text: 'All news', 
+            child: Container(),
+          );
   }
 }

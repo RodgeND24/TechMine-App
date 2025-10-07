@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:techmine/features/root/utils.dart';
 
 @RoutePage()
 class ServerPage extends StatefulWidget {
@@ -16,15 +17,9 @@ class _ServerPageState extends State<ServerPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(widget.name)
-          ],
-        ),
-      ),
+    return DefaultEmptyPage(
+      text: widget.name,
+      child: Column(),
     );
   }
 }
