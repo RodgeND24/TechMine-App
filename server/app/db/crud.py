@@ -120,10 +120,10 @@ async def get_all_information(db: AsyncSession):
 
 
 ''' Profile operations '''
-async def get_user_profile(db: AsyncSession):
+async def get_user_profile(username: str, db: AsyncSession):
     query = query(U.username, U.email, S.firstname,
                   S.lastname, S.description, S.balance,
-                  S.language, S.country, U.created_at).join(S, U.id == S.user_id, isouter=True)
+                  S.language, S.country, U.created_at).join(S, and_(U.id == S.user_id, U.username == username), isouter=True)
     result = await db.execute(query)
     profile = result.scalars().first()
     return profile
