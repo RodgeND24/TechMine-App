@@ -234,7 +234,7 @@ async def update_settings(username: str,
         summary="Get user's profile",
         )
 async def get_profile(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    user_profile = crud.get_user_profile(current_user.username, db)
+    user_profile = await crud.get_user_profile(current_user.username, db)
     if not user_profile:
         raise HTTPException(status_code=404, detail='Users not found')
     return user_profile
