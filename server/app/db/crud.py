@@ -130,8 +130,27 @@ async def get_user_profile(username: str, db: AsyncSession):
 
 ''' News operations '''
 async def get_news(db: AsyncSession, skip: int = 0, limit: int = 3):
-    result = await db.execute(select(N).offset(skip).limit(limit))
+    result = await db.execute(select(N).where(N.is_published == True).offset(skip).limit(limit))
     return result.scalars().all()
+
+async def get_news_by_id(news_id: int, db: AsyncSession):
+    result = await db.execute(select(N).where(N.id == news_id))
+    return result.scalars().first()
+
+async def add_news(news_info: schemas.NewsItemAdd, db: AsyncSession):
+    try:    
+        db_news = N(**news_info.model_dump())
+        db.add(db_news)
+        await db.commit()
+        await db.refresh(db_news)
+        return db_news
+    except:
+        return None
+
+async def delete_news_by_id(id: int, db: AsyncSession):
+    result = await db.execute(delete(N).where(N.id == id))
+    await db.commit()
+    return result
 
 ''' Servers operations '''
 async def get_servers(db: AsyncSession):
@@ -151,3 +170,8 @@ async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
         return db_server
     except:
         return None
+
+async def delete_server_by_name(name: str, db: AsyncSession):
+    result = await db.execute(delete(S).where(S.name == name))
+    await db.commit()
+    return result

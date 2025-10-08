@@ -104,13 +104,19 @@ class Profile(BaseModel):
     class Config:
         from_attributes = True
 
-class NewsItem(BaseModel):
-    id: int
+class NewsItemAdd(BaseModel):
     title: str
     description: str
     content: str
     image_url: str
+
+    class Config:
+        from_attributes = True
+
+class NewsItem(NewsItemAdd):
+    id: int
     created_at: datetime
+    is_published: bool
 
     class Config:
         from_attributes = True

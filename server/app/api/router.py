@@ -251,6 +251,47 @@ async def news(db: AsyncSession = Depends(get_db)):
     news = await crud.get_news(db=db, skip=0, limit=3)
     return news
 
+@router.get(
+        "/news/get/{id}",
+        tags=['News'],
+        summary="Get news by id",
+        )
+async def get_news(id: int, db: AsyncSession = Depends(get_db)):
+    news_item = await crud.get_news_by_id(news_id=id, db=db)
+    if not news_item:
+        raise HTTPException(status_code=404, detail='News not found')
+    return news_item
+
+@router.post(
+        "/news/add",
+        tags=['News'],
+        summary="Add news",
+        )
+async def servers(news_info: schemas.NewsItemAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        news_item = await crud.add_news(news_info=news_info, db=db)
+        if not news_item:
+            raise HTTPException(status_code=404, detail='Error: news is already exist or other error')
+        return news_item
+    return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+        "/news/delete/{id}", 
+         tags=['News'], 
+         summary = "Delete a news by id", 
+         )
+async def delete_news(news_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        db_news_item = await crud.get_news_by_id(db=db, news_id=news_id)
+        if not db_news_item:
+            raise HTTPException(status_code=404, detail="News don't exist")
+        result = await crud.delete_news_by_id(db=db, id=news_id)
+        if (result):
+            return {'result': f'News with id:{news_id} was deleted'}
+        else:
+            return {'result': 'News don\'t exist'}
+    return HTTPException(status_code=403, detail='Access deny')
+
 '''Servers'''
 @router.get(
         "/servers/get",
@@ -283,4 +324,21 @@ async def servers(server_info: schemas.ServerAdd, current_user: models.Users = D
         if not server:
             raise HTTPException(status_code=404, detail='Error: server is already exist or other error')
         return server
+    return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+        "/servers/delete/{name}", 
+         tags=['Servers'], 
+         summary = "Delete a server by name", 
+         )
+async def delete_server(server_name: str, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        db_server = await crud.get_server_by_name(db=db, server_name=server_name)
+        if not db_server:
+            raise HTTPException(status_code=404, detail="Server don't exist")
+        result = await crud.delete_server_by_name(db=db, name=server_name)
+        if (result):
+            return {'result': f'Server with name "{server_name}" was deleted'}
+        else:
+            return {'result': 'Server don\'t exist'}
     return HTTPException(status_code=403, detail='Access deny')
