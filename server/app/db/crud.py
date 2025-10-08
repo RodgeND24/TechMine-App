@@ -2,7 +2,7 @@ from sqlalchemy import (select, insert, update, delete, case, func,
                         and_, or_, not_, between, cast, desc, asc, 
                         distinct, text, null, extract,
                         union, union_all, intersect, except_, join)
-from sqlalchemy.orm import (query, aliased, joinedload, selectinload, subqueryload)
+from sqlalchemy.orm import (aliased, joinedload, selectinload, subqueryload)
 from sqlalchemy.sql import (expression, label, literal_column, table, exists, any_, all_)
 from sqlalchemy.ext.asyncio import AsyncSession
 # import models.models as models, schemas.schemas as schemas
@@ -121,9 +121,9 @@ async def get_all_information(db: AsyncSession):
 
 ''' Profile operations '''
 async def get_user_profile(username: str, db: AsyncSession):
-    profile_query = query(U.username, U.email, S.firstname,
+    profile_query = select(U.username, U.email, S.firstname,
                   S.lastname, S.description, S.balance,
-                  S.language, S.country, U.created_at).join(S, and_(U.id == S.user_id, U.username == username), isouter=True)
+                  S.language, S.country, U.created_at).outerjoin_from(U,S).where(U.username == username)
     result = await db.execute(profile_query)
-    profile = result.scalars().first()
-    return profile
+    profile = result.first()
+    return schemas.Profile.model_validate(profile, from_attributes=True)
