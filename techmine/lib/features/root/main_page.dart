@@ -88,8 +88,7 @@ class _MainPageState extends State<MainPage> {
                   content: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/icons/logo-mini.png', scale: 0.7,),
-                      SizedBox(height: 20,),
+                      Image.asset('assets/images/icons/logo.png', scale: 1.5,),
                       CustomMainText(text: 'Уникальное приключение, где технологии и творчество объединяются, чтобы создать незабываемый игровой опыт', size: 25, align: TextAlign.center),
                       SizedBox(height: 20,),
                       Row(
@@ -199,20 +198,7 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-Container CustomSection({Widget? content}) {
-    return Container(
-      // constraints: BoxConstraints( maxWidth: 960),
-      width: 960,
-      // height: height,
-      margin: EdgeInsets.only(bottom: 30),
-      padding: EdgeInsets.only(top: 50, bottom: 50),
-      decoration: BoxDecoration(
-        // color: Colors.white,
-        border: Border(bottom: BorderSide(color: mainColor, width: 2))
-      ),
-      child: content,
-    );
-}
+
 
 
 class NewsCard extends StatefulWidget {
@@ -291,30 +277,6 @@ class _ServerCardState extends State<ServerCard> {
     
     
   }
-}
-
-Widget CustomMainText({String text ='', double size = 20, TextAlign align = TextAlign.start}) {
-  return Container(
-    child: Text(text,
-      textAlign: align,
-      style: TextStyle(
-          color: Colors.white, 
-          fontSize: size, fontFamily: 'Nunito', fontWeight: FontWeight.w600,
-          shadows: [Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 10))]
-        )
-      )
-    );
-}
-
-Text CustomAdditionalText({String text ='', double size = 15, TextAlign align = TextAlign.start}) {
-  return Text(text, 
-    textAlign: align,
-    style: TextStyle(
-      color: Colors.white, 
-      fontSize: size, fontFamily: 'Nunito', fontWeight: FontWeight.w500,
-      shadows: [Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 10))]
-    )
-  );
 }
 
 Widget launcherButton({String text = ''}) {

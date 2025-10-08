@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
       create: (context) => AuthProvider()..initializeAuth(),
       child: MaterialApp.router(
           routerConfig: appRouter.config(),
-          title: 'TechMine',
+          title: 'TechMine | Сервер',
           debugShowCheckedModeBanner: false,
         )
     );

@@ -41,7 +41,7 @@ var logoFull = Container(
 
 // default Empty page for every page
 class DefaultEmptyPage extends StatefulWidget {
-  DefaultEmptyPage({super.key, required this.text, required this.child});
+  DefaultEmptyPage({super.key, String this.text = '', required this.child});
 
   final String text;
   final Widget child;
@@ -214,9 +214,9 @@ class _TopMenuState extends State<TopMenu> {
                                 tooltip: '',
                                 itemBuilder:(context) {
                                   return [
-                                    _popupTopMenuButton(value: 'TRPG', text: 'TechnoRPG'),
-                                    _popupTopMenuButton(value: 'OOS', text: 'OOS'),
-                                    _popupTopMenuButton(value: 'Create', text: 'Create'),
+                                    _popupTopMenuItemIcon(value: 'TRPG', text: 'TechnoRPG'),
+                                    _popupTopMenuItemIcon(value: 'OOS', text: 'OOS'),
+                                    _popupTopMenuItemIcon(value: 'Create', text: 'Create'),
                                   ];
                                 },
                                 elevation: 2,
@@ -246,14 +246,14 @@ class _TopMenuState extends State<TopMenu> {
                     itemBuilder: (context) {
                       if (context.read<AuthProvider>().isLoggedIn) {
                         return [
-                          _popupMenuItemAuth(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
-                          _popupMenuItemAuth(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
+                          _popupTopMenuItemIcon(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
+                          _popupTopMenuItemIcon(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
                         ];
                       }
                       else {
                         return [
-                          _popupMenuItemAuth(value: 'login', leftIcon: Icons.login, text: 'Вход'),
-                          _popupMenuItemAuth(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
+                          _popupTopMenuItemIcon(value: 'login', leftIcon: Icons.login, text: 'Вход'),
+                          _popupTopMenuItemIcon(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
                         ];
                       }
                     },
@@ -287,18 +287,18 @@ class _TopMenuState extends State<TopMenu> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(onPressed: () {context.router.push(MainRoute());}, style: ButtonStyle, child: Image.asset('images/icons/logo-full.png', scale: 2,),),
+                    TextButton(onPressed: () {context.router.push(MainRoute());}, style: ButtonStyle, child: Image.asset('assets/images/icons/logo-full.png', scale: 2,),),
                     PopupMenuButton(
                       icon: Icon(Icons.format_list_bulleted, color: Colors.white,),
                       color: foreignColor,
                       tooltip: '',
                       itemBuilder: (context) {
                         return [
-                            _popupTopMenuButton(value: 'main', text: 'Главная'),
-                            _popupTopMenuButton(value: 'servers', text: 'Сервера'),
-                            _popupTopMenuButton(value: 'donate', text: 'Донат'),
-                            _popupTopMenuButton(value: 'help', text: 'Помощь'),
-                            _popupTopMenuButton(value: 'contacts', text: 'Контакты'),
+                            _popupTopMenuItem(value: 'main', text: 'Главная'),
+                            _popupTopMenuItem(value: 'servers', text: 'Сервера'),
+                            _popupTopMenuItem(value: 'donate', text: 'Донат'),
+                            _popupTopMenuItem(value: 'help', text: 'Помощь'),
+                            _popupTopMenuItem(value: 'contacts', text: 'Соцсети'),
                           ];
                       },
                       elevation: 2,
@@ -325,14 +325,14 @@ class _TopMenuState extends State<TopMenu> {
                     itemBuilder: (context) {
                       if (context.read<AuthProvider>().isLoggedIn) {
                         return [
-                          _popupMenuItemAuth(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
-                          _popupMenuItemAuth(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
+                          _popupTopMenuItemIcon(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
+                          _popupTopMenuItemIcon(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
                         ];
                       }
                       else {
                         return [
-                          _popupMenuItemAuth(value: 'login', leftIcon: Icons.login, text: 'Вход'),
-                          _popupMenuItemAuth(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
+                          _popupTopMenuItemIcon(value: 'login', leftIcon: Icons.login, text: 'Вход'),
+                          _popupTopMenuItemIcon(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
                         ];
                       }
                     },
@@ -354,13 +354,6 @@ class _TopMenuState extends State<TopMenu> {
             ),
           );
   }
-
-
-
-
-
-  
-
 }
 
 Widget topMenuButton({required BuildContext context, required String text, page}) {
@@ -423,7 +416,7 @@ Widget commonUnderLineButton({String text ='', double textSize = 15, String link
     );
 }
 
-PopupMenuItem _popupTopMenuButton({required String value, required String text}) {
+PopupMenuItem _popupTopMenuItem({required String value, required String text}) {
   return PopupMenuItem(
                       value: value,
                       padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
@@ -440,16 +433,17 @@ PopupMenuItem _popupTopMenuButton({required String value, required String text})
                     );
 }
 
-PopupMenuItem _popupMenuItemAuth({required String value, required IconData leftIcon, required String text}) {
+PopupMenuItem _popupTopMenuItemIcon({required String value, IconData? leftIcon, String pathToIcon = 'assets/images/icons/gear.png', required String text}) {
 
   return PopupMenuItem(
                       value: value, 
                       padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                       child: Container(
+                        width: 150,
                         decoration: BoxDecoration(border: Border(bottom: BorderSide())),
                         child: Row(
                           children: [
-                            Icon(leftIcon, color: Colors.white,),
+                            leftIcon != null ? Icon(leftIcon, color: Colors.white) : Image.asset(pathToIcon, color: Colors.red,),
                             SizedBox(width: 5,),
                             Text(text, style: TextStyle(color: Colors.white, fontSize: 20))
                           ],
@@ -457,6 +451,45 @@ PopupMenuItem _popupMenuItemAuth({required String value, required IconData leftI
                       ),
                     );
 
+}
+
+Container CustomSection({Widget? content}) {
+    return Container(
+      // constraints: BoxConstraints( maxWidth: 960),
+      width: 960,
+      // height: height,
+      margin: EdgeInsets.only(bottom: 30),
+      padding: EdgeInsets.only(top: 50, bottom: 50),
+      decoration: BoxDecoration(
+        // color: Colors.white,
+        border: Border(bottom: BorderSide(color: mainColor, width: 2))
+      ),
+      child: content,
+    );
+}
+
+Widget CustomMainText({String text ='', double size = 20, TextAlign align = TextAlign.start}) {
+  return Container(
+    child: Text(text,
+      textAlign: align,
+      style: TextStyle(
+          color: Colors.white, 
+          fontSize: size, fontFamily: 'Nunito', fontWeight: FontWeight.w600,
+          shadows: [Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 10))]
+        )
+      )
+    );
+}
+
+Text CustomAdditionalText({String text ='', double size = 15, TextAlign align = TextAlign.start}) {
+  return Text(text, 
+    textAlign: align,
+    style: TextStyle(
+      color: Colors.white, 
+      fontSize: size, fontFamily: 'Nunito', fontWeight: FontWeight.w500,
+      shadows: [Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 10))]
+    )
+  );
 }
 
 Future<void> errorAlertDialog(BuildContext context, String error) {

@@ -19,7 +19,11 @@ class _ServerPageState extends State<ServerPage> {
 
     return DefaultEmptyPage(
       text: widget.name,
-      child: Column(),
+      child: Column(
+        children: [
+
+        ]
+      ),
     );
   }
 }
