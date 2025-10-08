@@ -227,3 +227,14 @@ async def update_settings(username: str,
             raise HTTPException(status_code=404, detail='Settings not exist or invalid username')
         return result
     return HTTPException(status_code=403, detail='Access deny')
+
+@router.get(
+        "/profile/get",
+        tags=['Profile'],
+        summary="Get user's profile",
+        )
+async def get_profile(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    user_profile = crud.get_user_profile
+    if not user_profile:
+        raise HTTPException(status_code=404, detail='Users not found')
+    return user_profile

@@ -86,3 +86,16 @@ class SettingsRel(Settings):
 
 class UsersRel(User):
     settings: "Settings"
+
+
+'''Class for profile'''
+class Profile(BaseModel):
+    username: str
+    email: str
+    firstname: str
+    lastname: str
+    description: str
+    balance: int
+    language: str
+    country: str
+    created_at: datetime
