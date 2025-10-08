@@ -228,13 +228,35 @@ async def update_settings(username: str,
         return result
     return HTTPException(status_code=403, detail='Access deny')
 
+'''Profile'''
 @router.get(
         "/profile/get",
         tags=['Profile'],
         summary="Get user's profile",
         )
 async def get_profile(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    user_profile = await crud.get_user_profile(current_user.username, db)
+    user_profile = await crud.get_user_profile(username=current_user.username, db=db)
     if not user_profile:
         raise HTTPException(status_code=404, detail='Users not found')
     return user_profile
+
+
+'''News'''
+@router.get(
+        "/news/get",
+        tags=['News'],
+        summary="Get news",
+        )
+async def news(db: AsyncSession = Depends(get_db)):
+    news = await crud.get_news(db=db, skip=0, limit=3)
+    return news
+
+'''Servers'''
+@router.get(
+        "/servers/get",
+        tags=['Servers'],
+        summary="Get all servers",
+        )
+async def servers(db: AsyncSession = Depends(get_db)):
+    servers = await crud.get_servers(db=db)
+    return servers

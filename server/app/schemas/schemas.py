@@ -49,6 +49,7 @@ class User(UserBase):
     created_at: datetime
     uuid: str | None
     role: str
+    skin_url: str
 
     class Config:
         from_attributes = True
@@ -99,3 +100,31 @@ class Profile(BaseModel):
     language: str
     country: str
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class NewsItem(BaseModel):
+    id: int
+    title: str
+    description: str
+    content: str
+    image_url: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class Server(BaseModel):
+    id: int
+    name: str
+    short_description: str
+    description: str
+    version: str
+    image_url: str
+    is_online: bool
+    online_players: int
+    max_players: int
+
+    class Config:
+        from_attributes = True

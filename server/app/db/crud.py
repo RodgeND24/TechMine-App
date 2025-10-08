@@ -7,7 +7,7 @@ from sqlalchemy.sql import (expression, label, literal_column, table, exists, an
 from sqlalchemy.ext.asyncio import AsyncSession
 # import models.models as models, schemas.schemas as schemas
 import schemas.schemas as schemas
-from models.models import (Users as U, Settings as S)
+from models.models import (Users as U, Settings as S, News as N, Servers as S)
 from core.utils import hash_password, verify_password
 
 '''User operations'''
@@ -127,3 +127,13 @@ async def get_user_profile(username: str, db: AsyncSession):
     result = await db.execute(profile_query)
     profile = result.first()
     return schemas.Profile.model_validate(profile, from_attributes=True)
+
+''' News operations '''
+async def get_news(db: AsyncSession, skip: int = 0, limit: int = 3):
+    result = await db.execute(select(N).offset(skip).limit(limit))
+    return result.scalars().all()
+
+''' Servers operations '''
+async def get_servers(db: AsyncSession):
+    result = await db.execute(select(S))
+    return result.scalars().all()

@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date, ForeignKey, Numeric, Enum, BigInteger
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date, ForeignKey, Numeric, Enum, BigInteger, Text
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
 from db.database import Base
@@ -29,11 +29,33 @@ class Settings(Base):
     lastname = Column(String, index=True, nullable=True)
     description = Column(String, nullable=True)
     balance = Column(BigInteger, default=0)
-
+    skin_url = Column(String, nullable=True)
     is_online = Column(Boolean, default=False)
     language: Mapped[Language]
     country = Column(String, index=True, default="Russia", nullable=True)
     theme = Column(String, default="dark")
 
     user: Mapped[Users] = relationship("Users", back_populates="settings")
+
+class News(Base):
+    __tablename__ = "news"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    description = Column(Text, nullable=True)
+    content = Column(Text, nullable=True)
+    image_url = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    is_published = Column(Boolean, default=True, index=True)
+
+class Servers(Base):
+    __tablename__ = "servers"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    short_description = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
+    version = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
+    is_online = Column(Boolean, default=False, index=True)
+    online_players = Column(Integer, default=0)
+    max_players = Column(Integer, default=20)
 
