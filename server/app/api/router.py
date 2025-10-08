@@ -260,3 +260,27 @@ async def news(db: AsyncSession = Depends(get_db)):
 async def servers(db: AsyncSession = Depends(get_db)):
     servers = await crud.get_servers(db=db)
     return servers
+
+@router.get(
+        "/servers/get/{name}",
+        tags=['Servers'],
+        summary="Get server by name",
+        )
+async def get_server(name: str, db: AsyncSession = Depends(get_db)):
+    server = await crud.get_server_by_name(server_name=name, db=db)
+    if not server:
+        raise HTTPException(status_code=404, detail='Server not found')
+    return server
+
+@router.post(
+        "/servers/add",
+        tags=['Servers'],
+        summary="Add servers",
+        )
+async def servers(server_info: schemas.ServerAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        server = await crud.add_server(server_info=server_info, db=db)
+        if not server:
+            raise HTTPException(status_code=404, detail='Error: server is already exist or other error')
+        return server
+    return HTTPException(status_code=403, detail='Access deny')

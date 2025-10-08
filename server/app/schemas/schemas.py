@@ -115,16 +115,21 @@ class NewsItem(BaseModel):
     class Config:
         from_attributes = True
 
-class Server(BaseModel):
-    id: int
+class ServerAdd(BaseModel):
     name: str
     short_description: str
     description: str
     version: str
     image_url: str
+    max_players: int
+
+    class Config:
+        from_attributes = True
+
+class Server(ServerAdd):
+    id: int
     is_online: bool
     online_players: int
-    max_players: int
 
     class Config:
         from_attributes = True

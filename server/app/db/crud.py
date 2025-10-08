@@ -137,3 +137,17 @@ async def get_news(db: AsyncSession, skip: int = 0, limit: int = 3):
 async def get_servers(db: AsyncSession):
     result = await db.execute(select(S))
     return result.scalars().all()
+
+async def get_server_by_name(server_name: str, db: AsyncSession):
+    result = await db.execute(select(S).where(S.name == server_name))
+    return result.scalars().first()
+
+async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
+    try:    
+        db_server = S(**server_info.model_dump())
+        db.add(db_server)
+        await db.commit()
+        await db.refresh(db_server)
+        return db_server
+    except:
+        return None
