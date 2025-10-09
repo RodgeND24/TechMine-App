@@ -1,3 +1,4 @@
+import os
 import models.models as models, schemas.schemas as schemas
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
@@ -5,12 +6,13 @@ from db.database import engine, get_db
 import db.crud as crud
 from typing import Annotated, List
 from core.security import get_current_user
-from api.file_router import upload_news_image, delete_news_image
+from api.file_router import upload_news_image, upload_server_image
+from core.utils import NEWS_DIR, SERVERS_DIR
 
-router = APIRouter(prefix="/api/users")
+router = APIRouter(prefix="/api")
 
 '''Users'''
-@router.get("/me",
+@router.get("/users/me",
             tags=["Users"],
             summary="Get current authenticated users",
             response_model=schemas.User)
@@ -18,7 +20,7 @@ async def get_current_authenticated_user(user: models.Users = Depends(get_curren
     return user
 
 @router.get(
-        "/admin/all-users-with-settings",
+        "/users/admin/all-users-with-settings",
         tags=['Users'],
         summary='Get all users in json (test) (for admin)'
 )
@@ -28,7 +30,7 @@ async def get_all_users_in_json(current_user: models.Users = Depends(get_current
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "/admin/all-users", 
+        "/users/admin/all-users", 
          tags=['Users'], 
          summary = "Get all users (for admin)", 
         #  response_model=List[schemas.User] | HTTPException
@@ -39,7 +41,7 @@ async def get_all_users(skip: int = 0, limit: int = 100, current_user: models.Us
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "/admin/user/id/{user_id}", 
+        "/users/admin/user/id/{user_id}", 
          tags=['Users'], 
          summary = "Get users by id (for admin)", 
         #  response_model=schemas.User | HTTPException
@@ -53,7 +55,7 @@ async def get_user_by_id(user_id: int, current_user: models.Users = Depends(get_
     return HTTPException(status_code=403, detail='Access deny')        
 
 @router.get(
-        "/admin/user/username/{username}", 
+        "/users/admin/user/username/{username}", 
          tags=['Users'], 
          summary = "Get users by username (for admin)", 
         #  response_model=schemas.User | HTTPException
@@ -67,7 +69,7 @@ async def get_user_by_username(username: str, current_user: models.Users = Depen
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.get(
-        "/admin/user/email/{email}", 
+        "/users/admin/user/email/{email}", 
          tags=['Users'], 
          summary = "Get users by email (for admin)", 
         #  response_model=schemas.User | HTTPException
@@ -83,7 +85,7 @@ async def get_user_by_email(email: str, current_user: models.Users = Depends(get
 
 
 @router.post(
-        "/admin/create-user", 
+        "/users/admin/create-user", 
          tags=['Users'], 
          summary = "Create a user", 
         #  response_model=schemas.User | HTTPException
@@ -99,7 +101,7 @@ async def create_user(current_user: models.Users = Depends(get_current_user), us
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-        "/admin/delete-account/{username}", 
+        "/users/admin/delete-account/{username}", 
          tags=['Users'], 
          summary = "Delete a user by id", 
          )
@@ -116,7 +118,7 @@ async def delete_user_by_username(username: str, current_user: models.Users = De
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-        "/delete-account", 
+        "/users/delete-account", 
          tags=['Users'], 
          summary = "Delete a current account", 
          )
@@ -133,7 +135,7 @@ async def delete_current_user(current_user: models.Users = Depends(get_current_u
 
 '''             Settings                '''
 @router.get(
-        "/settings/get", 
+        "/users/settings/get", 
          tags=['Settings'], 
          summary = "Get current user's settings", 
         #  response_model=schemas.Settings | HTTPException
@@ -146,7 +148,7 @@ async def get_settings(current_user: models.Users = Depends(get_current_user),
     return db_user_settings
 
 @router.post(
-        "/settings/add", 
+        "/users/settings/add", 
          tags=['Settings'], 
          summary = "Add current user's settings", 
         #  response_model=schemas.SettingsCreate | HTTPException
@@ -162,7 +164,7 @@ async def create_settings(settings: schemas.SettingsCreate = Depends(),
        
 
 @router.post(
-        "/settings/update",
+        "/users/settings/update",
         tags=['Settings'],
         summary="Update current user's settings",
         # response_model=schemas.SettingsBase | HTTPException
@@ -178,7 +180,7 @@ async def update_settings(settings: schemas.SettingsBase = Depends(),
 
 '''Settings (for admin)'''
 @router.get(
-        "/admin/settings/{username}/get", 
+        "/users/admin/settings/{username}/get", 
          tags=['Settings'], 
          summary = "Get user's settings (for admin)", 
         #  response_model=schemas.Settings | HTTPException
@@ -194,7 +196,7 @@ async def get_settings(username: str,
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-        "/admin/settings/{username}/add", 
+        "/users/admin/settings/{username}/add", 
          tags=['Settings'], 
          summary = "Add user's settings", 
         #  response_model=schemas.SettingsCreate | HTTPException
@@ -213,7 +215,7 @@ async def create_settings(username: str,
        
 
 @router.post(
-        "/admin/settings/{username}/update",
+        "/users/admin/settings/{username}/update",
         tags=['Settings'],
         summary="Update user's settings",
         # response_model=schemas.SettingsBase | HTTPException
@@ -231,7 +233,7 @@ async def update_settings(username: str,
 
 '''Profile'''
 @router.get(
-        "/profile/get",
+        "/users/profile/get",
         tags=['Profile'],
         summary="Get user's profile",
         )
@@ -242,7 +244,7 @@ async def get_profile(current_user: models.Users = Depends(get_current_user), db
     return user_profile
 
 @router.post(
-        "/profile/update",
+        "/users/profile/update",
         tags=['Profile'],
         summary="Update user's profile",
         )
@@ -289,6 +291,8 @@ async def add_news(
             raise HTTPException(status_code=404, detail='Error: news is already exist or other error')
         if file:
             await upload_news_image(news_id=news_item.id, file=file, current_user=current_user, db=db)
+        else:
+            await delete_news_image(news_id=news_item.id, current_user=current_user, db=db)
         return news_item
     return HTTPException(status_code=403, detail='Access deny')
 
@@ -327,6 +331,29 @@ async def delete_news(news_id: int, current_user: models.Users = Depends(get_cur
             return {'result': 'News don\'t exist'}
     return HTTPException(status_code=403, detail='Access deny')
 
+@router.post(
+            '/news-image/delete/{news_id}',
+            tags=["Upload"],
+            summary="Delete news image by id",
+            )
+async def delete_news_image(news_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    
+    if current_user.role == 'admin':
+        news_item = await crud.get_news_by_id(news_id=news_id, db=db)
+        old_image = str(news_item.image_url).split('/')[-1]
+        os.remove(NEWS_DIR / old_image)
+
+        url_path = '/media/news/'
+        news_item.image_url = url_path + 'default.jpg'
+        
+        db.commit()
+
+        return {
+            'message': 'News image deleted successfully'
+            }
+    else:
+        return HTTPException(status_code=403, detail='Access deny')
+
 '''Servers'''
 @router.get(
         "/servers/get",
@@ -351,15 +378,44 @@ async def get_server(name: str, db: AsyncSession = Depends(get_db)):
 @router.post(
         "/servers/add",
         tags=['Servers'],
-        summary="Add servers",
+        summary="Add server",
         )
-async def add_servers(server_info: schemas.ServerAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def add_servers(
+                    server_info: schemas.ServerAdd = Depends(), file: UploadFile | None = File(None),
+                    current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
         server = await crud.add_server(server_info=server_info, db=db)
         if not server:
             raise HTTPException(status_code=404, detail='Error: server is already exist or other error')
+        if file:
+            await upload_server_image(server_name=server.name, file=file, current_user=current_user, db=db)
+        else:
+            await delete_server_image(server_name=server.name, current_user=current_user, db=db)
         return server
     return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+            '/news-image/delete/{news_id}',
+            tags=["Upload"],
+            summary="Delete server image by name",
+            )
+async def delete_server_image(server_name: str, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    
+    if current_user.role == 'admin':
+        server = await crud.get_server_by_name(server_name=server_name, db=db)
+        old_image = str(server.image_url).split('/')[-1]
+        os.remove(SERVERS_DIR / old_image)
+
+        url_path = '/media/servers/'
+        server.image_url = url_path + 'default.jpg'
+        
+        db.commit()
+
+        return {
+            'message': 'Server image deleted successfully'
+            }
+    else:
+        return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
         "/servers/delete/{name}", 
@@ -371,6 +427,9 @@ async def delete_server(server_name: str, current_user: models.Users = Depends(g
         db_server = await crud.get_server_by_name(db=db, server_name=server_name)
         if not db_server:
             raise HTTPException(status_code=404, detail="Server don't exist")
+        
+        await delete_server_image(server_name=server_name, current_user=current_user, db=db)
+
         result = await crud.delete_server_by_name(db=db, name=server_name)
         if (result):
             return {'result': f'Server with name "{server_name}" was deleted'}

@@ -34,7 +34,6 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), current_
 
         news_item = await crud.get_news_by_id(news_id=news_id, db=db)
 
-        
         news_item.image_url = url_path + unique_filename
         db.commit()
 
@@ -46,25 +45,37 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), current_
     else:
         return HTTPException(status_code=403, detail='Access deny')
 
+# Endpoint for upload news image #
 @router.post(
-            '/news-image/{news_id}/delete',
+            '/server-image/{name}',
             tags=["Upload"],
-            summary="Delete news image by id",
+            summary="Upload server image by name",
             )
-async def delete_news_image(news_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def upload_server_image(server_name: str, file: UploadFile = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     
     if current_user.role == 'admin':
-        news_item = await crud.get_news_by_id(news_id=news_id, db=db)
-        old_image = str(news_item.image_url).split('/')[-1]
-        os.remove(NEWS_DIR / old_image)
-
-        url_path = '/media/news/'
-        news_item.image_url = url_path + 'default.jpg'
+        if not validate_file(file):
+            raise HTTPException(status_code=400, detail='Invalid file')
         
+        file_extension = Path(file.filename).suffix.lower()
+        unique_filename = f'server_{server_name}{file_extension}'
+        save_path = NEWS_DIR / unique_filename
+        url_path = '/media/servers/'
+
+        async with aiofiles.open(save_path, 'wb') as buffer:
+            content = await file.read()
+            await buffer.write(content)
+
+        server = await crud.get_server_by_name(server_name=server_name, db=db)
+
+        
+        server.image_url = url_path + unique_filename
         db.commit()
 
         return {
-            'message': 'News image deleted successfully'
+            'message': 'Server image upload successfully',
+            'filename': unique_filename,
+            'url': url_path + unique_filename
             }
     else:
         return HTTPException(status_code=403, detail='Access deny')
