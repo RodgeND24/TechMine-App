@@ -184,7 +184,8 @@ async def upload_avatar(
             )
 async def get_skin(userName: str, db: AsyncSession = Depends(get_db)):
 
-    file_path = await crud.get_skin_by_username(username=userName, db=db)
+    db_path = await crud.get_skin_by_username(username=userName, db=db)
+    file_path = str(BASE_DIR) + db_path
 
     if not file_path:
         default_path = SKINS_DIR / "default.png"
@@ -201,7 +202,8 @@ async def get_skin(userName: str, db: AsyncSession = Depends(get_db)):
             )
 async def get_cloak(userName: str, db: AsyncSession = Depends(get_db)):
 
-    file_path = await crud.get_cloak_by_username(username=userName, db=db)
+    db_path = await crud.get_cloak_by_username(username=userName, db=db)
+    file_path = str(BASE_DIR) + db_path
 
     if not file_path:
         default_path = CLOAKS_DIR / "default.png"
@@ -218,7 +220,8 @@ async def get_cloak(userName: str, db: AsyncSession = Depends(get_db)):
             )
 async def get_avatar(userName: str, db: AsyncSession = Depends(get_db)):
 
-    file_path = await crud.get_avatar_by_username(username=userName, db=db)
+    db_path = await crud.get_avatar_by_username(username=userName, db=db)
+    file_path = str(BASE_DIR) + db_path
 
     if not file_path:
         default_path = AVATARS_DIR / "default.png"
