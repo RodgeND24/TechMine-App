@@ -395,8 +395,8 @@ async def add_servers(
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-            '/news-image/delete/{news_id}',
-            tags=["Upload"],
+            '/server-image/delete/{news_id}',
+            tags=["Servers"],
             summary="Delete server image by name",
             )
 async def delete_server_image(server_name: str, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
