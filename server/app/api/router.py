@@ -341,7 +341,10 @@ async def delete_news_image(news_id: int, current_user: models.Users = Depends(g
     if current_user.role == 'admin':
         news_item = await crud.get_news_by_id(news_id=news_id, db=db)
         old_image = str(news_item.image_url).split('/')[-1]
-        os.remove(NEWS_DIR / old_image)
+        try:    
+            os.remove(NEWS_DIR / old_image)
+        except:
+            pass
 
         url_path = '/media/news/'
         news_item.image_url = url_path + 'default.jpg'
@@ -404,7 +407,10 @@ async def delete_server_image(server_name: str, current_user: models.Users = Dep
     if current_user.role == 'admin':
         server = await crud.get_server_by_name(server_name=server_name, db=db)
         old_image = str(server.image_url).split('/')[-1]
-        os.remove(SERVERS_DIR / old_image)
+        try:
+            os.remove(SERVERS_DIR / old_image)
+        except:
+            pass
 
         url_path = '/media/servers/'
         server.image_url = url_path + 'default.jpg'
