@@ -169,7 +169,7 @@ async def update_news_by_id(id: int, news_info: schemas.NewsItemUpdate, db: Asyn
     try:
         await get_news_by_id(news_id=id, db=db)
         await db.execute(update(News).values(**news_info.model_dump()).where(News.id == id))
-        
+
         await db.flush()
         await db.commit()
         return news_info
@@ -199,3 +199,16 @@ async def delete_server_by_name(name: str, db: AsyncSession):
     result = await db.execute(delete(Servers).where(Servers.name == name))
     await db.commit()
     return result
+
+''' Files operations '''
+async def get_skin_by_username(username: str, db: AsyncSession):
+    user_settings = await get_settings(username=username, db=db)
+    return user_settings.skin_url
+
+async def get_cloak_by_username(username: str, db: AsyncSession):
+    user_settings = await get_settings(username=username, db=db)
+    return user_settings.cloak_url
+
+async def get_avatar_by_username(username: str, db: AsyncSession):
+    user_settings = await get_settings(username=username, db=db)
+    return user_settings.avatar_url

@@ -1,3 +1,4 @@
+from fastapi.responses import FileResponse
 import models.models as models, schemas.schemas as schemas
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
@@ -130,5 +131,99 @@ async def upload_skin(
         }
     else:
         return HTTPException(status_code=404, detail='No settings for current user')
+
+# Endpoint for upload avatar #
+@router.post(
+            '/avatar',
+            tags=["Upload"],
+            summary="Upload avatar for user",
+            )
+async def upload_avatar(
+                    file: UploadFile = File(...),
+                    current_user: models.Users = Depends(get_current_user),
+                    db: AsyncSession = Depends(get_db)
+                    ):
     
+    if not validate_file(file):
+            raise HTTPException(status_code=400, detail='Invalid file')
     
+    user_settings = await crud.get_settings(username=current_user.username, db=db)
+    if user_settings:
+        
+        save_dir = AVATARS_DIR
+        url_path = '/media/avatars/'
+
+
+        unique_filename = f'{current_user.username}.png'
+        save_path = save_dir / unique_filename
+
+        try:
+            async with aiofiles.open(save_path, 'wb') as buffer:
+                content = await file.read()
+                await buffer.write(content)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f'Could not save file: {e}')
+        
+        user_settings.avatar_url = url_path + unique_filename
+
+        db.commit()
+
+        return {
+            'message': f'Avatar upload successfully',
+            'filename': unique_filename,
+            'url': url_path + unique_filename
+        }
+    else:
+        return HTTPException(status_code=404, detail='No settings for current user')
+    
+# Endpoints for download skins, cloaks and avatars #
+@router.get(
+            '/download/skin/{userName}',
+            tags=["Download"],
+            summary="Download skin for user",
+            )
+async def get_skin(userName: str, db: AsyncSession = Depends(get_db)):
+
+    file_path = await crud.get_skin_by_username(username=userName, db=db)
+
+    if not file_path.exists():
+        default_path = SKINS_DIR / "default.png"
+        if default_path.exists():
+            return FileResponse(default_path)
+        raise HTTPException(status_code=404, detail="Skin not found")
+    
+    return FileResponse(file_path)
+
+@router.get(
+            '/download/cloak/{userName}',
+            tags=["Download"],
+            summary="Download cloak for user",
+            )
+async def get_cloak(userName: str, db: AsyncSession = Depends(get_db)):
+
+    file_path = await crud.get_cloak_by_username(username=userName, db=db)
+
+    if not file_path.exists():
+        default_path = CLOAKS_DIR / "default.png"
+        if default_path.exists():
+            return FileResponse(default_path)
+        raise HTTPException(status_code=404, detail="Cloak not found")
+    
+    return FileResponse(file_path)
+
+@router.get(
+            '/download/avatar/{userName}',
+            tags=["Download"],
+            summary="Download cloak for user",
+            )
+async def get_avatar(userName: str, db: AsyncSession = Depends(get_db)):
+
+    file_path = await crud.get_avatar_by_username(username=userName, db=db)
+
+    if not file_path.exists():
+        default_path = AVATARS_DIR / "default.png"
+        if default_path.exists():
+            return FileResponse(default_path)
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    
+    return FileResponse(file_path)

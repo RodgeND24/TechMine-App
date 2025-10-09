@@ -333,7 +333,7 @@ async def delete_news(news_id: int, current_user: models.Users = Depends(get_cur
 
 @router.post(
             '/news-image/delete/{news_id}',
-            tags=["Upload"],
+            tags=["News"],
             summary="Delete news image by id",
             )
 async def delete_news_image(news_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
