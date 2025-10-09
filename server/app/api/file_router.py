@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/upload")
 # Endpoint for upload news image #
 @router.post(
             '/news-image/{news_id}',
-            tags=["News"],
+            tags=["Upload"],
             summary="Upload news image by id",
             )
 async def upload_news_image(news_id: int, file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
@@ -45,7 +45,9 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), db: Asyn
 
 # Endpoint for upload skin #
 @router.post(
-            '/skin'
+            '/skin',
+            tags=["Upload"],
+            summary="Upload skin for user",
             )
 async def upload_skin(
                     file: UploadFile = File(...),
