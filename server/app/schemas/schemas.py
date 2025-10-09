@@ -23,6 +23,9 @@ class Settings(SettingsBase):
     user_id: int
     is_online: bool
     balance: int
+    skin_url: str
+    cloak_url: str
+    avatar_url: str
 
     class Config:
         from_attributes = True

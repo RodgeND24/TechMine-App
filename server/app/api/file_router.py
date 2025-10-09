@@ -45,7 +45,7 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), current_
     else:
         return HTTPException(status_code=403, detail='Access deny')
 
-# Endpoint for upload news image #
+# Endpoint for upload server image #
 @router.post(
             '/server-image/{name}',
             tags=["Upload"],
@@ -80,15 +80,15 @@ async def upload_server_image(server_name: str, file: UploadFile = File(...), cu
     else:
         return HTTPException(status_code=403, detail='Access deny')
 
-# Endpoint for upload skin #
+# Endpoint for upload skin and cloak #
 @router.post(
             '/skin',
             tags=["Upload"],
-            summary="Upload skin for user",
+            summary="Upload skin or cloak for user",
             )
 async def upload_skin(
                     file: UploadFile = File(...),
-                    skin_type: str = Form('skin'),
+                    skin_type: str = Form(...),
                     current_user: models.Users = Depends(get_current_user),
                     db: AsyncSession = Depends(get_db)
                     ):
@@ -119,7 +119,7 @@ async def upload_skin(
         if skin_type == 'skin':
             user_settings.skin_url = url_path + unique_filename
         else:
-            pass
+            user_settings.cloak_url = url_path + unique_filename
 
         db.commit()
 

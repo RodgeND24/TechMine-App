@@ -29,7 +29,9 @@ class Settings(Base):
     lastname = Column(String, index=True, nullable=True)
     description = Column(String, nullable=True)
     balance = Column(BigInteger, default=0)
-    skin_url = Column(String, nullable=True)
+    skin_url = Column(String, default='/media/skins/default.png')
+    cloak_url = Column(String, nullable=True)
+    avatar_url = Column(String, default='/media/avatars/default.png')
     is_online = Column(Boolean, default=False)
     language: Mapped[Language]
     country = Column(String, index=True, default="Russia", nullable=True)
