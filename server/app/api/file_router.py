@@ -46,6 +46,29 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), current_
     else:
         return HTTPException(status_code=403, detail='Access deny')
 
+@router.post(
+            '/news-image/{news_id}/delete',
+            tags=["Upload"],
+            summary="Delete news image by id",
+            )
+async def delete_news_image(news_id: int, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    
+    if current_user.role == 'admin':
+        news_item = await crud.get_news_by_id(news_id=news_id, db=db)
+        old_image = str(news_item.image_url).split('/')[-1]
+        os.remove(NEWS_DIR / old_image)
+
+        url_path = '/media/news/'
+        news_item.image_url = url_path + 'default.jpg'
+        
+        db.commit()
+
+        return {
+            'message': 'News image deleted successfully'
+            }
+    else:
+        return HTTPException(status_code=403, detail='Access deny')
+
 # Endpoint for upload skin #
 @router.post(
             '/skin',

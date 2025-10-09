@@ -34,7 +34,7 @@ app.include_router(router_crud)
 app.include_router(router_file)
 app.include_router(router_auth)
 
-for directory in [MEDIA_DIR, SKINS_DIR, CLOAKS_DIR, NEWS_DIR, AVATARS_DIR]:
+for directory in [MEDIA_DIR, SKINS_DIR, CLOAKS_DIR, NEWS_DIR, SERVERS_DIR, AVATARS_DIR]:
     directory.mkdir(exist_ok=True)
 
 app.mount('/media', StaticFiles(directory=MEDIA_DIR), name='media')

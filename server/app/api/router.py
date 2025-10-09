@@ -5,7 +5,7 @@ from db.database import engine, get_db
 import db.crud as crud
 from typing import Annotated, List
 from core.security import get_current_user
-from api.file_router import upload_news_image
+from api.file_router import upload_news_image, delete_news_image
 
 router = APIRouter(prefix="/api/users")
 
@@ -317,6 +317,9 @@ async def delete_news(news_id: int, current_user: models.Users = Depends(get_cur
         db_news_item = await crud.get_news_by_id(db=db, news_id=news_id)
         if not db_news_item:
             raise HTTPException(status_code=404, detail="News don't exist")
+        
+        await delete_news_image(news_id=news_id, current_user=current_user, db=db)
+
         result = await crud.delete_news_by_id(db=db, id=news_id)
         if (result):
             return {'result': f'News with id:{news_id} was deleted'}
