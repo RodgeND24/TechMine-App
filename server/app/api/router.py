@@ -395,7 +395,7 @@ async def add_servers(
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-            '/server-image/delete/{news_id}',
+            '/server-image/delete/{server_name}',
             tags=["Servers"],
             summary="Delete server image by name",
             )
