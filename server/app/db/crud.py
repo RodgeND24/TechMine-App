@@ -93,15 +93,19 @@ async def update_settings(username: str, db: AsyncSession, settings: schemas.Set
     
 # Get user's settings
 async def get_settings(db: AsyncSession, username: str):
-    db_user = await get_user_by_username(db=db, username=username)
-    result = await db.execute(select(S).filter(S.user_id == db_user.id))
-    return result.scalars().first()
+    if username:
+        db_user = await get_user_by_username(db=db, username=username)
+        result = await db.execute(select(S).filter(S.user_id == db_user.id))
+        return result.scalars().first()
+    return None
 
 async def delete_settings(db: AsyncSession, username: str):
-    db_user = await get_user_by_username(db=db, username=username)
-    result = await db.execute(delete(S).filter(S.user_id == db_user.id))
-    db.commit()
-    return result
+    if username:
+        db_user = await get_user_by_username(db=db, username=username)
+        result = await db.execute(delete(S).filter(S.user_id == db_user.id))
+        db.commit()
+        return result
+    return None
 
 
 
