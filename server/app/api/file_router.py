@@ -17,31 +17,34 @@ router = APIRouter(prefix="/api/upload")
             tags=["Upload"],
             summary="Upload news image by id",
             )
-async def upload_news_image(news_id: int, file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+async def upload_news_image(news_id: int, file: UploadFile = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     
-    if not validate_file(file):
-        raise HTTPException(status_code=400, detail='Invalid file')
-    
-    file_extension = Path(file.filename).suffix.lower()
-    unique_filename = f'news_{news_id}{file_extension}'
-    save_path = NEWS_DIR / unique_filename
-    url_path = 'media/news/{unique_filename}'
+    if current_user.role == 'admin':
+        if not validate_file(file):
+            raise HTTPException(status_code=400, detail='Invalid file')
+        
+        file_extension = Path(file.filename).suffix.lower()
+        unique_filename = f'news_{news_id}{file_extension}'
+        save_path = NEWS_DIR / unique_filename
+        url_path = 'media/news/{unique_filename}'
 
-    async with aiofiles.open(save_path, 'wb') as buffer:
-        content = await file.read()
-        await buffer.write(content)
+        async with aiofiles.open(save_path, 'wb') as buffer:
+            content = await file.read()
+            await buffer.write(content)
 
-    news_item = await crud.get_news_by_id(news_id=news_id, db=db)
+        news_item = await crud.get_news_by_id(news_id=news_id, db=db)
 
-    
-    news_item.image_url = url_path
-    db.commit()
+        
+        news_item.image_url = url_path
+        db.commit()
 
-    return {
-        'message': 'News image upload successfully',
-        'filename': unique_filename,
-        'url': url_path
-        }
+        return {
+            'message': 'News image upload successfully',
+            'filename': unique_filename,
+            'url': url_path
+            }
+    else:
+        return HTTPException(status_code=403, detail='Access deny')
 
 # Endpoint for upload skin #
 @router.post(
@@ -64,10 +67,10 @@ async def upload_skin(
         
         if skin_type == 'skin':
             save_dir = SKINS_DIR
-            url_path = f'/media/skins'
+            url_path = f'/media/skins/'
         else:
             save_dir = CLOAKS_DIR
-            url_path = f'/media/cloaks'
+            url_path = f'/media/cloaks/'
 
         unique_filename = f'{current_user.username}.png'
         save_path = save_dir / unique_filename
@@ -80,7 +83,7 @@ async def upload_skin(
             raise HTTPException(status_code=500, detail=f'Could not save file: {e}')
         
         if skin_type == 'skin':
-            user_settings.skin_url = url_path
+            user_settings.skin_url = url_path + unique_filename
         else:
             pass
 
@@ -89,7 +92,7 @@ async def upload_skin(
         return {
             'message': f'{skin_type} upload successfully',
             'filename': unique_filename,
-            'url': url_path
+            'url': url_path + unique_filename
         }
     else:
         return HTTPException(status_code=404, detail='No settings for current user')
