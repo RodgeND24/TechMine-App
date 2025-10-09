@@ -186,14 +186,13 @@ async def get_skin(userName: str, db: AsyncSession = Depends(get_db)):
 
     try:
         db_path = await crud.get_skin_by_username(username=userName, db=db)
-        file_path = str(BASE_DIR) + db_path      
+        file_path = str(BASE_DIR) + db_path
+        if not Path(file_path).exists():
+            default_path = SKINS_DIR / "default.png"
+            return FileResponse(default_path)
         return FileResponse(file_path)
     except:
-        if not file_path:
-            default_path = SKINS_DIR / "default.png"
-            if default_path.exists():
-                return FileResponse(default_path)
-            raise HTTPException(status_code=404, detail="Skin not found")
+        raise HTTPException(status_code=404, detail="Skin not found")
 
 @router.get(
             '/download/cloak/{userName}',
@@ -202,16 +201,15 @@ async def get_skin(userName: str, db: AsyncSession = Depends(get_db)):
             )
 async def get_cloak(userName: str, db: AsyncSession = Depends(get_db)):
 
-    try:        
+    try:
         db_path = await crud.get_cloak_by_username(username=userName, db=db)
         file_path = str(BASE_DIR) + db_path
+        if not Path(file_path).exists():
+            default_path = CLOAKS_DIR / "default.png"
+            return FileResponse(default_path)
         return FileResponse(file_path)
     except:
-        if not file_path:
-            default_path = CLOAKS_DIR / "default.png"
-            if default_path.exists():
-                return FileResponse(default_path)
-            raise HTTPException(status_code=404, detail="Cloak not found")
+        raise HTTPException(status_code=404, detail="Cloak not found")
 
 @router.get(
             '/download/avatar/{userName}',
@@ -220,13 +218,15 @@ async def get_cloak(userName: str, db: AsyncSession = Depends(get_db)):
             )
 async def get_avatar(userName: str, db: AsyncSession = Depends(get_db)):
 
-    try:        
+    try:
         db_path = await crud.get_avatar_by_username(username=userName, db=db)
         file_path = str(BASE_DIR) + db_path
+        if not Path(file_path).exists():
+            default_path = AVATARS_DIR / "default.png"
+            return FileResponse(default_path)
         return FileResponse(file_path)
     except:
-        if not file_path:
-            default_path = AVATARS_DIR / "default.png"
-            if default_path.exists():
-                return FileResponse(default_path)
-            raise HTTPException(status_code=404, detail="Avatar not found")
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    
+
+    

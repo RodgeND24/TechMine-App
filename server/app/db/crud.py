@@ -220,13 +220,22 @@ async def delete_server_by_name(name: str, db: AsyncSession):
 
 ''' Files operations '''
 async def get_skin_by_username(username: str, db: AsyncSession):
-    user_settings = await get_settings(username=username, db=db)
-    return user_settings.skin_url
+    try:
+        user_settings = await get_settings(username=username, db=db)
+        return user_settings.skin_url
+    except:
+        return None
 
 async def get_cloak_by_username(username: str, db: AsyncSession):
-    user_settings = await get_settings(username=username, db=db)
-    return user_settings.cloak_url
+    try:
+        user_settings = await get_settings(username=username, db=db)
+        return user_settings.cloak_url
+    except:
+        return None
 
 async def get_avatar_by_username(username: str, db: AsyncSession):
-    user_settings = await get_settings(username=username, db=db)
-    return user_settings.avatar_url
+    try:
+        user_settings = await get_settings(username=username, db=db)
+        return user_settings.avatar_url
+    except:
+        return None
