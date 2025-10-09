@@ -93,19 +93,21 @@ async def update_settings(username: str, db: AsyncSession, settings: schemas.Set
     
 # Get user's settings
 async def get_settings(db: AsyncSession, username: str):
-    if username:
+    try:
         db_user = await get_user_by_username(db=db, username=username)
         result = await db.execute(select(S).filter(S.user_id == db_user.id))
         return result.scalars().first()
-    return None
+    except:
+        return None
 
 async def delete_settings(db: AsyncSession, username: str):
-    if username:
+    try:
         db_user = await get_user_by_username(db=db, username=username)
         result = await db.execute(delete(S).filter(S.user_id == db_user.id))
         db.commit()
         return result
-    return None
+    except:
+        return None
 
 
 
@@ -125,12 +127,15 @@ async def get_all_information(db: AsyncSession):
 
 ''' Profile operations '''
 async def get_user_profile(username: str, db: AsyncSession):
-    profile_query = select(U.username, U.email, S.firstname,
-                  S.lastname, S.description, S.balance,
-                  S.language, S.country, U.created_at).outerjoin_from(U,S).where(U.username == username)
-    result = await db.execute(profile_query)
-    profile = result.first()
-    return schemas.Profile.model_validate(profile, from_attributes=True)
+    try:
+        profile_query = select(U.username, U.email, S.firstname,
+                    S.lastname, S.description, S.balance,
+                    S.language, S.country, U.created_at).outerjoin_from(U,S).where(U.username == username)
+        result = await db.execute(profile_query)
+        profile = result.first()
+        return schemas.Profile.model_validate(profile, from_attributes=True)
+    except:
+        return None
 
 async def update_user_profile(username: str, db: AsyncSession, profile: schemas.ProfileUpdate):
     try:
@@ -165,9 +170,12 @@ async def add_news(news_info: schemas.NewsItemAdd, db: AsyncSession):
         return None
 
 async def delete_news_by_id(id: int, db: AsyncSession):
-    result = await db.execute(delete(News).where(News.id == id))
-    await db.commit()
-    return result
+    try:
+        result = await db.execute(delete(News).where(News.id == id))
+        await db.commit()
+        return result
+    except:
+        return None
 
 async def update_news_by_id(id: int, news_info: schemas.NewsItemUpdate, db: AsyncSession):
     try:
@@ -186,8 +194,11 @@ async def get_servers(db: AsyncSession):
     return result.scalars().all()
 
 async def get_server_by_name(server_name: str, db: AsyncSession):
-    result = await db.execute(select(Servers).where(Servers.name == server_name))
-    return result.scalars().first()
+    try:
+        result = await db.execute(select(Servers).where(Servers.name == server_name))
+        return result.scalars().first()
+    except:
+        return None
 
 async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
     try:    
@@ -200,9 +211,12 @@ async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
         return None
 
 async def delete_server_by_name(name: str, db: AsyncSession):
-    result = await db.execute(delete(Servers).where(Servers.name == name))
-    await db.commit()
-    return result
+    try:
+        result = await db.execute(delete(Servers).where(Servers.name == name))
+        await db.commit()
+        return result
+    except:
+        return None
 
 ''' Files operations '''
 async def get_skin_by_username(username: str, db: AsyncSession):
