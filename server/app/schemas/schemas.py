@@ -1,5 +1,6 @@
 # Pydantic-schemas for database tables
 
+from fastapi import Form
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime, date
@@ -116,6 +117,19 @@ class NewsItemAdd(BaseModel):
 
     class Config:
         from_attributes = True
+    
+    @classmethod
+    def as_form(
+        cls,
+        title: str = Form(...),
+        description: str = Form(...),
+        content: str = Form(...)
+    ):
+        return cls(
+            title=title,
+            description=description,
+            content=content
+        )
 
 class NewsItemUpdate(NewsItemAdd):
     pass

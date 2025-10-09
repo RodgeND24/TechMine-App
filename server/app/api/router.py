@@ -279,7 +279,10 @@ async def get_news(news_id: int, db: AsyncSession = Depends(get_db)):
         tags=['News'],
         summary="Add news",
         )
-async def add_news(news_info: schemas.NewsItemAdd, file: UploadFile | None = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def add_news(
+                    news_info: schemas.NewsItemAdd = Depends(), file: UploadFile | None = File(None), 
+                    current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+                    ):
     if current_user.role == 'admin':
         news_item = await crud.add_news(news_info=news_info, db=db)
         if not news_item:
