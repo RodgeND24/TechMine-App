@@ -7,7 +7,7 @@ from sqlalchemy.sql import (expression, label, literal_column, table, exists, an
 from sqlalchemy.ext.asyncio import AsyncSession
 # import models.models as models, schemas.schemas as schemas
 import schemas.schemas as schemas
-from models.models import (Users as U, Settings as S, News as N, Servers as S)
+from models.models import (Users as U, Settings as S, News, Servers)
 from core.utils import hash_password, verify_password
 
 '''User operations'''
@@ -128,18 +128,31 @@ async def get_user_profile(username: str, db: AsyncSession):
     profile = result.first()
     return schemas.Profile.model_validate(profile, from_attributes=True)
 
+async def update_user_profile(username: str, db: AsyncSession, profile: schemas.ProfileUpdate):
+    try:
+        db_user = await get_user_by_username(db=db, username=username)
+    
+        query = update(S).values(**profile.model_dump()).where(S.user_id == db_user.id)
+        await db.execute(query)
+        
+        await db.flush()
+        await db.commit()
+        return profile
+    except:
+        return None
+
 ''' News operations '''
 async def get_news(db: AsyncSession, skip: int = 0, limit: int = 3):
-    result = await db.execute(select(N).where(N.is_published == True).offset(skip).limit(limit))
+    result = await db.execute(select(News).where(News.is_published == True).offset(skip).limit(limit))
     return result.scalars().all()
 
 async def get_news_by_id(news_id: int, db: AsyncSession):
-    result = await db.execute(select(N).where(N.id == news_id))
+    result = await db.execute(select(News).where(News.id == news_id))
     return result.scalars().first()
 
 async def add_news(news_info: schemas.NewsItemAdd, db: AsyncSession):
     try:    
-        db_news = N(**news_info.model_dump())
+        db_news = News(**news_info.model_dump())
         db.add(db_news)
         await db.commit()
         await db.refresh(db_news)
@@ -148,22 +161,33 @@ async def add_news(news_info: schemas.NewsItemAdd, db: AsyncSession):
         return None
 
 async def delete_news_by_id(id: int, db: AsyncSession):
-    result = await db.execute(delete(N).where(N.id == id))
+    result = await db.execute(delete(News).where(News.id == id))
     await db.commit()
     return result
 
+async def update_news_by_id(id: int, news_info: schemas.NewsItemUpdate, db: AsyncSession):
+    try:
+        await get_news_by_id(news_id=id, db=db)
+        await db.execute(update(News).values(**news_info.model_dump()).where(News.id == id))
+        
+        await db.flush()
+        await db.commit()
+        return news_info
+    except:
+        return None
+
 ''' Servers operations '''
 async def get_servers(db: AsyncSession):
-    result = await db.execute(select(S))
+    result = await db.execute(select(Servers))
     return result.scalars().all()
 
 async def get_server_by_name(server_name: str, db: AsyncSession):
-    result = await db.execute(select(S).where(S.name == server_name))
+    result = await db.execute(select(Servers).where(Servers.name == server_name))
     return result.scalars().first()
 
 async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
     try:    
-        db_server = S(**server_info.model_dump())
+        db_server = Servers(**server_info.model_dump())
         db.add(db_server)
         await db.commit()
         await db.refresh(db_server)
@@ -172,6 +196,6 @@ async def add_server(server_info: schemas.ServerAdd, db: AsyncSession):
         return None
 
 async def delete_server_by_name(name: str, db: AsyncSession):
-    result = await db.execute(delete(S).where(S.name == name))
+    result = await db.execute(delete(Servers).where(Servers.name == name))
     await db.commit()
     return result

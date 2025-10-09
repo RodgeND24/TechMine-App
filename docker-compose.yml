@@ -13,6 +13,8 @@ services:
       - backend
       - frontend
       - gml-web-proxy
+    volumes:
+      - ./server/app/media:/var/www/media
     networks:
       - app-network
       
@@ -26,6 +28,8 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - ENVIRONMENT=production
+    volumes:
+      - ./server/app/media:/server/app/media
     networks:
       - app-network
 

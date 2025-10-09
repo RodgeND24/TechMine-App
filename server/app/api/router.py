@@ -237,7 +237,18 @@ async def update_settings(username: str,
 async def get_profile(current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     user_profile = await crud.get_user_profile(username=current_user.username, db=db)
     if not user_profile:
-        raise HTTPException(status_code=404, detail='Users not found')
+        raise HTTPException(status_code=404, detail='User not found')
+    return user_profile
+
+@router.post(
+        "/profile/update",
+        tags=['Profile'],
+        summary="Update user's profile",
+        )
+async def update_profile(profile_info: schemas.ProfileUpdate, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    user_profile = await crud.update_user_profile(username=current_user.username, profile=profile_info, db=db)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail='User not found')
     return user_profile
 
 
@@ -252,12 +263,12 @@ async def news(db: AsyncSession = Depends(get_db)):
     return news
 
 @router.get(
-        "/news/get/{id}",
+        "/news/get/{news_id}",
         tags=['News'],
         summary="Get news by id",
         )
-async def get_news(id: int, db: AsyncSession = Depends(get_db)):
-    news_item = await crud.get_news_by_id(news_id=id, db=db)
+async def get_news(news_id: int, db: AsyncSession = Depends(get_db)):
+    news_item = await crud.get_news_by_id(news_id=news_id, db=db)
     if not news_item:
         raise HTTPException(status_code=404, detail='News not found')
     return news_item
@@ -267,7 +278,7 @@ async def get_news(id: int, db: AsyncSession = Depends(get_db)):
         tags=['News'],
         summary="Add news",
         )
-async def servers(news_info: schemas.NewsItemAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def add_news(news_info: schemas.NewsItemAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
         news_item = await crud.add_news(news_info=news_info, db=db)
         if not news_item:
@@ -276,7 +287,22 @@ async def servers(news_info: schemas.NewsItemAdd, current_user: models.Users = D
     return HTTPException(status_code=403, detail='Access deny')
 
 @router.post(
-        "/news/delete/{id}", 
+        "/news/update/{news_id}",
+        tags=['News'],
+        summary="Update news by id",
+        )
+async def update_news(news_id: int, news_info: schemas.NewsItemUpdate, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if current_user.role == 'admin':
+        news_item = await crud.get_news_by_id(news_id=news_id, db=db)
+        if not news_item:
+            raise HTTPException(status_code=404, detail='New not found')
+
+        await crud.update_news_by_id(id=news_id, news_info=news_info, db=db)
+        return news_info
+    return HTTPException(status_code=403, detail='Access deny')
+
+@router.post(
+        "/news/delete/{news_id}", 
          tags=['News'], 
          summary = "Delete a news by id", 
          )
@@ -318,7 +344,7 @@ async def get_server(name: str, db: AsyncSession = Depends(get_db)):
         tags=['Servers'],
         summary="Add servers",
         )
-async def servers(server_info: schemas.ServerAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def add_servers(server_info: schemas.ServerAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
         server = await crud.add_server(server_info=server_info, db=db)
         if not server:

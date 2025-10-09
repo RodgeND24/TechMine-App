@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from uvicorn import run
 from api.router import router as router_crud
+from api.file_router import router as router_file
 from core.auth import router as router_auth
 from db.database import init_db
+from core.utils import *
 
 app = FastAPI(title='FastAPI backend for TechMine server')
 
@@ -28,8 +31,13 @@ async def on_startup():
     await init_db()
 
 app.include_router(router_crud)
+app.include_router(router_file)
 app.include_router(router_auth)
 
+for directory in [MEDIA_DIR, SKINS_DIR, CLOAKS_DIR, NEWS_DIR, AVATARS_DIR]:
+    directory.mkdir(exist_ok=True)
+
+app.mount('/media', StaticFiles(directory=MEDIA_DIR), name='media')
 
 if __name__=="__main__":
     run("main:app", host='0.0.0.0', port=8800, reload=True)

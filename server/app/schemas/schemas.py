@@ -90,20 +90,25 @@ class UsersRel(User):
 
 
 '''Class for profile'''
-class Profile(BaseModel):
-    username: str
-    email: str
+class ProfileUpdate(BaseModel):
     firstname: str
     lastname: str
     description: str
-    balance: int
     language: str
     country: str
+
+class ProfileBase(ProfileUpdate):
+    username: str
+    email: str
+
+class Profile(ProfileBase):
+    balance: int
     created_at: datetime
 
     class Config:
         from_attributes = True
 
+'''Class for news'''
 class NewsItemAdd(BaseModel):
     title: str
     description: str
@@ -113,6 +118,9 @@ class NewsItemAdd(BaseModel):
     class Config:
         from_attributes = True
 
+class NewsItemUpdate(NewsItemAdd):
+    pass
+
 class NewsItem(NewsItemAdd):
     id: int
     created_at: datetime
@@ -121,6 +129,7 @@ class NewsItem(NewsItemAdd):
     class Config:
         from_attributes = True
 
+'''Class for servers'''
 class ServerAdd(BaseModel):
     name: str
     short_description: str

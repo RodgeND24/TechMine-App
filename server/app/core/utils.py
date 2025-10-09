@@ -1,4 +1,4 @@
-from fastapi import Response
+from fastapi import Response, UploadFile
 from pydantic import BaseModel
 from datetime import timedelta
 from passlib.context import CryptContext
@@ -63,3 +63,34 @@ def set_cookies(response: Response, access_token: str, refresh_token: str):
         samesite="lax",
         # domain='domain.com'
     )
+
+# Files Configuration #
+
+BASE_DIR = Path(__file__).parent.parent
+ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
+MAX_FILE_SIZE = 2 * 1024 * 1024 # 2 Mb
+
+MEDIA_DIR = BASE_DIR / 'media'
+SKINS_DIR = MEDIA_DIR / 'skins'
+CLOAKS_DIR = MEDIA_DIR / 'cloaks'
+NEWS_DIR = MEDIA_DIR / 'news'
+SERVERS_DIR = MEDIA_DIR / 'servers'
+AVATARS_DIR = MEDIA_DIR / 'avatars'
+
+async def validate_file(file: UploadFile):
+
+    file_extension = Path(file.filename).suffix.lower()
+    if file_extension not in ALLOWED_EXTENSIONS:
+        return False
+
+    file.file.seek(0,2) # end of file
+    file_size = file.file.tell()
+    file.file.seek(0)
+
+    if file_size > MAX_FILE_SIZE:
+        return False
+    
+    if (file.content_type not in ['image/png', 'image/jpeg']):
+        return False
+    
+    return True

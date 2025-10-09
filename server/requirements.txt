@@ -1,6 +1,7 @@
 # API
 fastapi==0.116.1
 uvicorn
+aiofiles
 
 # Lib for environment variables
 python-dotenv
