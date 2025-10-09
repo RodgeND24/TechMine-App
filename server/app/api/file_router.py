@@ -10,11 +10,11 @@ from pathlib import Path
 from core.utils import *
 import os, aiofiles
 
-router = APIRouter(prefix="/api/upload")
+router = APIRouter(prefix="/api")
 
 # Endpoint for upload news image #
 @router.post(
-            '/news-image/{news_id}',
+            '/upload/news-image/{news_id}',
             tags=["Upload"],
             summary="Upload news image by id",
             )
@@ -48,7 +48,7 @@ async def upload_news_image(news_id: int, file: UploadFile = File(...), current_
 
 # Endpoint for upload server image #
 @router.post(
-            '/server-image/{name}',
+            '/upload/server-image/{name}',
             tags=["Upload"],
             summary="Upload server image by name",
             )
@@ -83,7 +83,7 @@ async def upload_server_image(server_name: str, file: UploadFile = File(...), cu
 
 # Endpoint for upload skin and cloak #
 @router.post(
-            '/skin',
+            '/upload/skin',
             tags=["Upload"],
             summary="Upload skin or cloak for user",
             )
@@ -134,7 +134,7 @@ async def upload_skin(
 
 # Endpoint for upload avatar #
 @router.post(
-            '/avatar',
+            '/upload/avatar',
             tags=["Upload"],
             summary="Upload avatar for user",
             )
