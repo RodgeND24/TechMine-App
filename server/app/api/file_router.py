@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/upload")
             tags=["Upload"],
             summary="Upload news image by id",
             )
-async def upload_news_image(news_id: int = Form(...), file: UploadFile = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def upload_news_image(news_id: int, file: UploadFile = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     
     if current_user.role == 'admin':
         if not validate_file(file):
