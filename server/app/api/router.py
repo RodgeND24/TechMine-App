@@ -1,10 +1,11 @@
 import models.models as models, schemas.schemas as schemas
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from db.database import engine, get_db
 import db.crud as crud
 from typing import Annotated, List
 from core.security import get_current_user
+from api.file_router import upload_news_image
 
 router = APIRouter(prefix="/api/users")
 
@@ -278,11 +279,13 @@ async def get_news(news_id: int, db: AsyncSession = Depends(get_db)):
         tags=['News'],
         summary="Add news",
         )
-async def add_news(news_info: schemas.NewsItemAdd, current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def add_news(news_info: schemas.NewsItemAdd, file: UploadFile | None = File(...), current_user: models.Users = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if current_user.role == 'admin':
         news_item = await crud.add_news(news_info=news_info, db=db)
         if not news_item:
             raise HTTPException(status_code=404, detail='Error: news is already exist or other error')
+        if file:
+            await upload_news_image(news_id=news_item.id, file=file, current_user=current_user, db=db)
         return news_item
     return HTTPException(status_code=403, detail='Access deny')
 

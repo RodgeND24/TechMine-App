@@ -113,7 +113,6 @@ class NewsItemAdd(BaseModel):
     title: str
     description: str
     content: str
-    image_url: str
 
     class Config:
         from_attributes = True
