@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:techmine/features/routing/app_route.dart';
 import 'package:provider/provider.dart';
 import 'package:techmine/services/auth/auth_provider.dart';
+import 'package:techmine/services/auth/auth_service.dart';
 import 'package:web/web.dart' as web;
 
 
@@ -20,6 +21,11 @@ var getStyleByParent = ElevatedButton.styleFrom(
   );
 var accessButtonTextStyle = TextStyle(color: Colors.white, fontSize: 20);
 var startGameButtonTextStyle = TextStyle(color: Colors.white, fontSize: 20);
+var usernameTextStyle = TextStyle(color: Colors.white, fontSize: 17);
+var footerTextStyle = TextStyle(color: Colors.white, fontSize: 15);
+
+bool userIsLoggedIn = false;
+
 bool isWidth = true;
 
 var ButtonStyle = TextButton.styleFrom(
@@ -84,12 +90,12 @@ class _DefaultEmptyPageState extends State<DefaultEmptyPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     Text('© TechMine 2025. Все права защищены'),
-                        //   ],
-                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('© TechMine 2025. Все права защищены', style: footerTextStyle,),
+                          ],
+                        ),
                         // Row(
                         //   mainAxisAlignment: MainAxisAlignment.center,
                         //   children: [
@@ -121,7 +127,7 @@ class TopMenu extends StatefulWidget {
 class _TopMenuState extends State<TopMenu> {
 
   final GlobalKey containerKey = GlobalKey();
-  double containerWidth = 960;
+  double containerWidth = 1000;
 
   void _checkContainerWidth(context) {
     
@@ -129,7 +135,7 @@ class _TopMenuState extends State<TopMenu> {
     if (renderBox != null) {
       final width = renderBox.size.width;
       containerWidth = width;
-      if (containerWidth < 960) {
+      if (containerWidth < 1000) {
         if (isWidth) {
           setState(() {
             isWidth = false;
@@ -157,23 +163,44 @@ class _TopMenuState extends State<TopMenu> {
       if (!authProvider.isInitialized) {
         authProvider.initializeAuth();
       }
+      // print(authProvider.isLoggedIn);
     });
   }
   
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final authService = AuthService();
 
-    return buildMenu(authProvider);
+    return buildMenu(authProvider, authService);
   }
 
-  Widget buildMenu(AuthProvider authProvider) {
+  Widget buildMenu(AuthProvider authProvider, AuthService authService) {
     return LayoutBuilder(
       builder: (context, constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
             _checkContainerWidth(context);
         });
 
+        if (authProvider.isCheckingAuth || !authProvider.isInitialized) {
+          return Container(
+            key: containerKey,
+            margin: isWidth ?
+                    EdgeInsets.fromLTRB(0, 20, 0, 0) :
+                    EdgeInsets.fromLTRB(15, 20, 15, 0),
+            decoration: BoxDecoration(
+              color: foreignColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(color: Colors.white),
+                ),
+            )
+          );
+        }
         return Container(
           key: containerKey,
           margin: isWidth ?
@@ -185,16 +212,16 @@ class _TopMenuState extends State<TopMenu> {
           ),
         
           child: isWidth ?
-                widthTopMenu() :
-                tightTopMenu()
+                widthTopMenu(authProvider, authService) :
+                tightTopMenu(authProvider, authService)
         );
       }
     );
   }
 
-  Widget widthTopMenu() {
+  Widget widthTopMenu(AuthProvider authProvider, AuthService authService) {
     return Container(
-            constraints: BoxConstraints(maxWidth: 960),
+            constraints: BoxConstraints(maxWidth: 1000),
             width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -240,7 +267,9 @@ class _TopMenuState extends State<TopMenu> {
                   ),
                 ),
                 PopupMenuButton(
-                    icon: Icon(Icons.person, color: Colors.white,),
+                    icon: (authProvider.isLoggedIn && authProvider.isInitialized) 
+                          ? Image.network(authService.getFileUrl(authProvider.user?.username, 'avatar'), scale: 5,)
+                          : Icon(Icons.person, color: Colors.white,),
                     color: foreignColor,
                     tooltip: '',
                     itemBuilder: (context) {
@@ -270,13 +299,14 @@ class _TopMenuState extends State<TopMenu> {
                           }
                       }
                     },
-                  )
+                  ),
+                  (authProvider.isLoggedIn && authProvider.isInitialized) ? Text(authProvider.user!.username, style: usernameTextStyle) : Text('Аккаунт', style: usernameTextStyle)
               ],
             ),
           );
   }
 
-  Widget tightTopMenu() {
+  Widget tightTopMenu(AuthProvider authProvider, AuthService authService) {
     return Container(
             constraints: BoxConstraints(minWidth: 500),
             width: double.infinity,
@@ -289,7 +319,7 @@ class _TopMenuState extends State<TopMenu> {
                   children: [
                     TextButton(onPressed: () {context.router.push(MainRoute());}, style: ButtonStyle, child: Image.asset('assets/images/icons/logo-full.png', scale: 2,),),
                     PopupMenuButton(
-                      icon: Icon(Icons.format_list_bulleted, color: Colors.white,),
+                      icon: Icon(Icons.list, color: Colors.white,),
                       color: foreignColor,
                       tooltip: '',
                       itemBuilder: (context) {
@@ -318,38 +348,45 @@ class _TopMenuState extends State<TopMenu> {
                   ],
                 ),
                 startGameButton(context: context),
-                PopupMenuButton(
-                    icon: Icon(Icons.person, color: Colors.white,),
-                    color: foreignColor,
-                    tooltip: '',
-                    itemBuilder: (context) {
-                      if (context.read<AuthProvider>().isLoggedIn) {
-                        return [
-                          _popupTopMenuItemIcon(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
-                          _popupTopMenuItemIcon(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
-                        ];
-                      }
-                      else {
-                        return [
-                          _popupTopMenuItemIcon(value: 'login', leftIcon: Icons.login, text: 'Вход'),
-                          _popupTopMenuItemIcon(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
-                        ];
-                      }
-                    },
-                    elevation: 2,
-                    offset: Offset(0, 50),
-                    onSelected: (value) async {
-                      switch (value) {
-                        case 'login': context.router.push(LoginRoute());
-                        case 'register': context.pushRoute(RegisterRoute());
-                        case 'profile': context.pushRoute(ProfileRoute());
-                        case 'exit': {
-                            await context.read<AuthProvider>().logout();
-                            context.router.replaceAll([MainRoute()]);
-                          }
-                      }
-                    },
-                  )
+                Row(
+                  children: [
+                    PopupMenuButton(
+                      icon: (authProvider.isLoggedIn && authProvider.isInitialized) 
+                            ? Image.network(authService.getFileUrl(authProvider.user?.username, 'avatar'), scale: 5,)
+                            : Icon(Icons.person, color: Colors.white,),
+                      color: foreignColor,
+                      tooltip: '',
+                      itemBuilder: (context) {
+                        if (context.read<AuthProvider>().isLoggedIn) {
+                          return [
+                            _popupTopMenuItemIcon(value: 'profile', leftIcon: Icons.person_4, text: 'Профиль'),
+                            _popupTopMenuItemIcon(value: 'exit', leftIcon: Icons.person_4, text: 'Выход')
+                          ];
+                        }
+                        else {
+                          return [
+                            _popupTopMenuItemIcon(value: 'login', leftIcon: Icons.login, text: 'Вход'),
+                            _popupTopMenuItemIcon(value: 'register', leftIcon: Icons.key, text: 'Регистрация')
+                          ];
+                        }
+                      },
+                      elevation: 2,
+                      offset: Offset(0, 50),
+                      onSelected: (value) async {
+                        switch (value) {
+                          case 'login': context.router.push(LoginRoute());
+                          case 'register': context.pushRoute(RegisterRoute());
+                          case 'profile': context.pushRoute(ProfileRoute());
+                          case 'exit': {
+                              await context.read<AuthProvider>().logout();
+                              context.router.replaceAll([MainRoute()]);
+                            }
+                        }
+                      },
+                    ),
+                    (authProvider.isLoggedIn && authProvider.isInitialized) ? Text(authProvider.user!.username, style: usernameTextStyle) : Text('Аккаунт', style: usernameTextStyle)
+                  ],
+                )
               ],
             ),
           );

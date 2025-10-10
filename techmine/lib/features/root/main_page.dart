@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:techmine/features/root/utils.dart';
+import 'package:techmine/services/auth/auth_service.dart';
 
 @RoutePage()
 class MainPage extends StatefulWidget {
@@ -22,17 +23,18 @@ class _MainPageState extends State<MainPage> {
   int _onlineUsers = 0;
   int _totalUsers = 0;
 
-  List<String> _news = [];
+  List<dynamic>? _news = [];
   int _newsCount = 0;
 
   List<String> _servers = [];
   int _serversCount = 0;
 
-  
+  final authService = AuthService();
 
-  void checkNews() {
-    _news = ['Наполнение сайта', 'Доработка лаунчера', 'Создание сборки'];
-    _newsCount = _news.length;
+  void checkNews() async {
+    // _news = ['Наполнение сайта', 'Доработка лаунчера', 'Создание сборки'];
+    _news = await authService.getNews();
+    _newsCount = _news!.length;
   }
 
   void checkServers() {
@@ -133,7 +135,7 @@ class _MainPageState extends State<MainPage> {
                           itemCount: _newsCount,
                           physics: ScrollPhysics(),
                           itemBuilder:(context, index) {
-                            return NewsCard(text: 'News: ${_news[index]}');
+                            return NewsCard(text: 'News: ${_news![index]}');
                           },
                         )
                       

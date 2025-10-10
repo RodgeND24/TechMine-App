@@ -8,7 +8,16 @@ import 'package:techmine/features/root/utils.dart';
 
 void main() {
   setUrlStrategy(PathUrlStrategy());
-  runApp(MyApp());
+
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider())
+      ],
+      child: MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -16,8 +25,6 @@ class MyApp extends StatefulWidget {
 
   @override
   _MyAppState createState() => _MyAppState();
-
-
 }
 
 
@@ -25,28 +32,22 @@ class _MyAppState extends State<MyApp> {
 
   final appRouter = AppRouter();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initializeApp();
-    
-  // }
-
-  void _initializeApp() async {
-    final authProvider = AuthProvider();
-    await authProvider.initializeAuth();
-
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider()..initializeAuth(),
-      child: MaterialApp.router(
-          routerConfig: appRouter.config(),
-          title: 'TechMine | Сервер',
-          debugShowCheckedModeBanner: false,
-        )
+    return MaterialApp.router(
+      routerConfig: appRouter.config(),
+      title: 'TechMine | Сервер',
+      debugShowCheckedModeBanner: false,
+      
+      builder: (context, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final authProvider = context.read<AuthProvider>();
+          if (!authProvider.isInitialized) {
+            authProvider.initializeAuth();
+          }
+        });
+        return child!;
+      },      
     );
   }
 }

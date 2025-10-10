@@ -140,7 +140,14 @@ class NewsItem(NewsItemAdd):
     id: int
     created_at: datetime
     is_published: bool
+    image_url: str
 
+    class Config:
+        from_attributes = True
+
+class NewsPublic(NewsItemAdd):
+    created_at: datetime
+    image_url: str
     class Config:
         from_attributes = True
 
@@ -158,6 +165,13 @@ class ServerAdd(BaseModel):
 
 class Server(ServerAdd):
     id: int
+    is_online: bool
+    online_players: int
+
+    class Config:
+        from_attributes = True
+    
+class ServerPublic(ServerAdd):
     is_online: bool
     online_players: int
 

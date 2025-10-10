@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:techmine/features/root/utils.dart';
 
 @RoutePage()
 class ProfilePage extends StatefulWidget {
@@ -14,16 +15,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Text('Profile Page'),
-          
-          Expanded(
-            child: AutoRouter()
-          ),
-        ],
-      ),
-    );
+    return DefaultEmptyPage(
+            text: 'Profile', 
+            child: Container(
+              
+            ),
+          );
   }
 }

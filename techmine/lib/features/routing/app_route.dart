@@ -58,7 +58,7 @@ class AppRouter extends RootStackRouter {
       path: '/profile',
       page: ProfileRoute.page,
       guards: [AuthGuard()],
-      transitionsBuilder: TransitionsBuilders.slideLeft,
+      transitionsBuilder: TransitionsBuilders.fadeIn,
       children: [
         CustomRoute(path: 'balance', page: BalanceRoute.page, transitionsBuilder: TransitionsBuilders.fadeIn),
         CustomRoute(path: 'skin', page: SkinRoute.page, transitionsBuilder: TransitionsBuilders.fadeIn)

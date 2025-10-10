@@ -1,5 +1,6 @@
 import 'package:techmine/services/auth/auth_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:techmine/services/auth/models/profile_data.dart';
 import 'package:techmine/services/auth/models/token.dart';
 import 'package:techmine/services/auth/models/user.dart';
 
@@ -31,11 +32,18 @@ class AuthProvider extends ChangeNotifier {
     _isCheckingAuth = true;
     notifyListeners();
 
-    await checkAuthStatus();
-
-    _isInitialized = true;
-    _isCheckingAuth = false;
-    notifyListeners();
+    try {
+      await checkAuthStatus();
+      _isInitialized = true;
+    }
+    catch (e) {
+      _error = e.toString();
+      _isInitialized = true;
+    }
+    finally {
+      _isCheckingAuth = false;
+      notifyListeners();
+    }
   }
 
   void clearError() {
@@ -133,6 +141,7 @@ class AuthProvider extends ChangeNotifier {
 
     _isCheckingAuth = true;
     _isLoading = true;
+    notifyListeners();
 
     try {
       final hasValidToken = await _authService.hasValidToken();
@@ -200,6 +209,21 @@ class AuthProvider extends ChangeNotifier {
       rethrow;
     }
 
+  }
+
+  Future<ProfileData?> getUserProfile() async {
+    _isLoading = true;
+    
+    if (_isLoggedIn) {
+      final profile = await _authService.getProfile();
+      _isLoading = false;
+      notifyListeners();
+      return profile;
+    }
+    else {
+      await checkAuthStatus();
+      return null;
+    }
   }
 
 }

@@ -2,6 +2,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
+import 'package:techmine/services/auth/models/news_data.dart';
+import 'package:techmine/services/auth/models/profile_data.dart';
 import 'dart:convert';
 
 import 'package:techmine/services/auth/models/token.dart';
@@ -10,8 +12,8 @@ import 'package:techmine/services/auth/models/user.dart';
 class AuthService {
 
   // final Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:8800/api/'));
-  final _baseUrl = '/api';
-  // final _baseUrl = 'http://localhost:8800/api';
+  // final _baseUrl = '/api';
+  final _baseUrl = 'http://localhost:8800/api';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static bool get _isWeb => identical(0, 0.0);
@@ -242,11 +244,56 @@ class AuthService {
     return headers;
   }
 
+  // Functions to get user profile
+  Future<ProfileData?> getProfile() async {
+    
+    if (!await hasValidToken()) {return null;}
 
+    try {
+      final response = await _get('users/profile/get');
+      
+      if (response.statusCode == 200) {
+        return ProfileData.fromJson(json.decode(response.body));
+      }
+      else if (response.statusCode == 401) {
+        return null;
+      }
+    }
+    catch (e) {
+      // throw Exception('Error: $e');
+      return null;
+    }
+    return null;
+  }
 
+  String getFileUrl(String? username, String type) {
+    return 'https://techmineserver.ru/api/download/$type/$username';
+  }
 
+  // Function to get News
+  Future<List?> getNews() async {
+    final response = await _get('news/get');
+    final newsList = json.decode(response.body);
+    // print(newsList);
+    return newsList;
+    // try {
+    //   final response = await _get('news/get');
+    //   if (response.statusCode == 200) {
+    //     final newsList = json.decode(response.body);
+    //     print(newsList);
+    //     return newsList;
+    //   }
+    //   else if (response.statusCode == 401) {
+    //     return [];
+    //   }
+    // }
+    // catch (e) {
+    //   // throw Exception('Error: $e');
+    //   return [];
+    // }
+    // return [];
+  }
 
-
-
+  // Function to get Servers
 
 }

@@ -152,8 +152,10 @@ async def update_user_profile(username: str, db: AsyncSession, profile: schemas.
 
 ''' News operations '''
 async def get_news(db: AsyncSession, skip: int = 0, limit: int = 3):
-    result = await db.execute(select(News).where(News.is_published == True).offset(skip).limit(limit))
-    return result.scalars().all()
+    query = select(News.title, News.description, News.content, News.created_at, News.image_url).where(News.is_published == True).offset(skip).limit(limit)
+    result = await db.execute(query)
+
+    return [schemas.NewsPublic.model_validate(row, from_attributes=True) for row in result]
 
 async def get_news_by_id(news_id: int, db: AsyncSession):
     result = await db.execute(select(News).where(News.id == news_id))
@@ -190,8 +192,9 @@ async def update_news_by_id(id: int, news_info: schemas.NewsItemUpdate, db: Asyn
 
 ''' Servers operations '''
 async def get_servers(db: AsyncSession):
-    result = await db.execute(select(Servers))
-    return result.scalars().all()
+    query = select(Servers.name, Servers.short_description, Servers.description, Servers.version, Servers.is_online, Servers.online_players, Servers.max_players, Servers.image_url)
+    result = await db.execute(query)
+    return [schemas.ServerPublic.model_validate(row, from_attributes=True) for row in result]
 
 async def get_server_by_name(server_name: str, db: AsyncSession):
     try:
