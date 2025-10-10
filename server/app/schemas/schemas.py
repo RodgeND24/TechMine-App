@@ -53,7 +53,6 @@ class User(UserBase):
     created_at: datetime
     uuid: str | None
     role: str
-    skin_url: str
 
     class Config:
         from_attributes = True
