@@ -12,8 +12,8 @@ import 'package:techmine/services/auth/models/user.dart';
 class AuthService {
 
   // final Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:8800/api/'));
-  // final _baseUrl = '/api';
-  final _baseUrl = 'http://localhost:8800/api';
+  final _baseUrl = '/api';
+  // final _baseUrl = 'http://localhost:8800/api';
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static bool get _isWeb => identical(0, 0.0);
