@@ -190,6 +190,7 @@ class _TopMenuState extends State<TopMenu> {
         if (authProvider.isCheckingAuth || !authProvider.isInitialized) {
           return Container(
             key: containerKey,
+            constraints: BoxConstraints(maxWidth: 1000),
             margin: isWidth ?
                     EdgeInsets.fromLTRB(0, 20, 0, 0) :
                     EdgeInsets.fromLTRB(15, 20, 15, 0),
