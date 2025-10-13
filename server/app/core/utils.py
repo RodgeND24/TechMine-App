@@ -49,7 +49,7 @@ def set_cookies(response: Response, access_token: str, refresh_token: str):
         key = auth_config.JWT_ACCESS_COOKIE_NAME,
         value = access_token,
         max_age = auth_config.JWT_ACCESS_TOKEN_EXPIRES * 60,
-        secure=False,   # True in production
+        secure=True,   # True in production
         httponly=False,
         samesite="lax",
         # domain='domain.com'
@@ -58,8 +58,8 @@ def set_cookies(response: Response, access_token: str, refresh_token: str):
         key = auth_config.JWT_REFRESH_COOKIE_NAME,
         value = refresh_token,
         max_age = auth_config.JWT_REFRESH_TOKEN_EXPIRES * 60 * 60,
-        secure=False,   # True in production
-        httponly=False,
+        secure=True,   # True in production
+        httponly=True,
         samesite="lax",
         # domain='domain.com'
     )
