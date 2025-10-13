@@ -60,4 +60,6 @@ class Servers(Base):
     is_online = Column(Boolean, default=False, index=True)
     online_players = Column(Integer, default=0)
     max_players = Column(Integer, default=20)
+    ip = Column(String, nullable=True)
+    port = Column(String, nullable=True)
 

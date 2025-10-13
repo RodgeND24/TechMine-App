@@ -192,7 +192,9 @@ async def update_news_by_id(id: int, news_info: schemas.NewsItemUpdate, db: Asyn
 
 ''' Servers operations '''
 async def get_servers(db: AsyncSession):
-    query = select(Servers.name, Servers.short_description, Servers.description, Servers.version, Servers.is_online, Servers.online_players, Servers.max_players, Servers.image_url)
+    query = select(Servers.name, Servers.short_description, Servers.description,
+                   Servers.version, Servers.is_online, Servers.online_players,
+                   Servers.max_players, Servers.image_url, Servers.ip, Servers.port)
     result = await db.execute(query)
     return [schemas.ServerPublic.model_validate(row, from_attributes=True) for row in result]
 

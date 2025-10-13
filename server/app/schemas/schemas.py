@@ -159,6 +159,8 @@ class ServerAdd(BaseModel):
     version: str
     image_url: str
     max_players: int
+    ip: str
+    port: str
 
     class Config:
         from_attributes = True
@@ -167,6 +169,8 @@ class Server(ServerAdd):
     id: int
     is_online: bool
     online_players: int
+    ip: str
+    port: str
 
     class Config:
         from_attributes = True
@@ -174,6 +178,8 @@ class Server(ServerAdd):
 class ServerPublic(ServerAdd):
     is_online: bool
     online_players: int
+    ip: str
+    port: str
 
     class Config:
         from_attributes = True
