@@ -87,48 +87,33 @@ class _DefaultEmptyPageState extends State<DefaultEmptyPage> {
             decoration: BoxDecoration(
                           image: DecorationImage(image: AssetImage('assets/images/bg/bg_factory_main.jpg'), fit: BoxFit.cover),
                         ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // topImage,
-                          TopMenu(),
-                          Text(widget.text, style: TextStyle(color: Colors.white)),
-                          widget.child,
-                          Footer(),
-                        ],
-                      ),
-                  )
-                )
-              ],
-            )
-            
-            
-            // CustomScrollView(
-            //   slivers: [
-            //     SliverList(
-            //       delegate: SliverChildListDelegate(
-            //         [
-            //           Column(
-            //             mainAxisAlignment: MainAxisAlignment.start,
-            //             children: [
-            //               // topImage,
-            //               TopMenu(),
-            //               Text(widget.text, style: TextStyle(color: Colors.white)),
-            //               widget.child,
-            //               Footer(),
-            //               CustomSection()
+            child: CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    TopMenu(),
+                    if (widget.text.isNotEmpty)
+                      Text(widget.text, style: TextStyle(color: Colors.white)),
+                    widget.child,
+                  ]),
+                ),
+                
 
-            //             ],
-            //           ),
-            //         ]
-            //       )
-            //     ),
-            //   ],
-            // ),
+                SliverFillRemaining(
+                  hasScrollBody: false, 
+                  fillOverscroll: false, 
+                  child: Container(
+                    alignment: Alignment.bottomCenter, 
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Footer(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
       ),
     );
   }
@@ -221,19 +206,22 @@ class _TopMenuState extends State<TopMenu> {
             )
           );
         }
-        return Container(
-          key: containerKey,
-          margin: isWidth ?
-                  EdgeInsets.fromLTRB(0, 20, 0, 0) :
-                  EdgeInsets.fromLTRB(15, 20, 15, 0),
-          decoration: BoxDecoration(
-            color: foreignColor,
-            borderRadius: BorderRadius.circular(10),
+        return Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 1000),
+            key: containerKey,
+            margin: isWidth ?
+                    EdgeInsets.fromLTRB(0, 20, 0, 0) :
+                    EdgeInsets.fromLTRB(15, 20, 15, 0),
+            decoration: BoxDecoration(
+              color: foreignColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          
+            child: isWidth ?
+                  widthTopMenu(authProvider, authService) :
+                  tightTopMenu(authProvider, authService)
           ),
-        
-          child: isWidth ?
-                widthTopMenu(authProvider, authService) :
-                tightTopMenu(authProvider, authService)
         );
       }
     );
