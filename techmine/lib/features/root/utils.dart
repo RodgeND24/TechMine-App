@@ -87,52 +87,48 @@ class _DefaultEmptyPageState extends State<DefaultEmptyPage> {
             decoration: BoxDecoration(
                           image: DecorationImage(image: AssetImage('assets/images/bg/bg_factory_main.jpg'), fit: BoxFit.cover),
                         ),
-            child: CustomScrollView(
-              slivers: [
-                SliverList(
-                  delegate: SliverChildListDelegate(
-                    [
-                      Column(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           // topImage,
                           TopMenu(),
                           Text(widget.text, style: TextStyle(color: Colors.white)),
                           widget.child,
-                          Footer()
+                          Footer(),
                         ],
                       ),
-                    ]
                   )
-                ),
-                // SliverFillRemaining(
-                //   hasScrollBody: false,
-                //   child: Container(
-                //     constraints: BoxConstraints(maxHeight: 300),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.end,
-                //       children: [
-                //         Row(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           children: [
-                //             Text('© TechMine 2025. Все права защищены', style: footerTextStyle,),
-                //           ],
-                //         ),
-                //         // Row(
-                //         //   mainAxisAlignment: MainAxisAlignment.center,
-                //         //   children: [
-                //         //     Text('ИП'),
-                //         //     Text('Почта')
-                //         //   ],
-                //         // ),
-                //       ],
-                      
-                //     )
-                //   ),
-                // ),
-
+                )
               ],
-            ),
+            )
+            
+            
+            // CustomScrollView(
+            //   slivers: [
+            //     SliverList(
+            //       delegate: SliverChildListDelegate(
+            //         [
+            //           Column(
+            //             mainAxisAlignment: MainAxisAlignment.start,
+            //             children: [
+            //               // topImage,
+            //               TopMenu(),
+            //               Text(widget.text, style: TextStyle(color: Colors.white)),
+            //               widget.child,
+            //               Footer(),
+            //               CustomSection()
+
+            //             ],
+            //           ),
+            //         ]
+            //       )
+            //     ),
+            //   ],
+            // ),
       ),
     );
   }
@@ -540,7 +536,7 @@ PopupMenuItem _popupTopMenuItemIcon({required String value, IconData? leftIcon, 
 
 }
 
-Container CustomSection({Widget? content}) {
+Container CustomSection({Widget? content, Border? border}) {
     return Container(
       // constraints: BoxConstraints( maxWidth: 960),
       width: 960,
@@ -549,7 +545,7 @@ Container CustomSection({Widget? content}) {
       padding: EdgeInsets.only(bottom: 50),
       decoration: BoxDecoration(
         // color: Colors.white,
-        border: Border(bottom: BorderSide(color: mainColor, width: 2))
+        border: (border == null) ? Border(bottom: BorderSide(color: mainColor, width: 2)) : border
       ),
       child: content,
     );
@@ -581,6 +577,7 @@ Text CustomAdditionalText({String text ='', double size = 15, TextAlign align = 
 
 Container Footer() {
   return CustomSection(
+    border: Border(),
     content: Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
