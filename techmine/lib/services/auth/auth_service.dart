@@ -266,34 +266,39 @@ class AuthService {
     return null;
   }
 
-  String getFileUrl(String? username, String type) {
-    return 'https://techmineserver.ru/api/download/$type/$username';
+  String getFileByName(String? name, String type) {
+    return 'https://techmineserver.ru/api/download/$type/$name';
+  }
+
+  String getFileByUrl(String? path) {
+    return 'https://techmineserver.ru/$path';
   }
 
   // Function to get News
-  Future<List?> getNews() async {
+  Future<List> getNews() async {
     final response = await _get('news/get');
     final newsList = json.decode(response.body);
-    // print(newsList);
     return newsList;
-    // try {
-    //   final response = await _get('news/get');
-    //   if (response.statusCode == 200) {
-    //     final newsList = json.decode(response.body);
-    //     print(newsList);
-    //     return newsList;
-    //   }
-    //   else if (response.statusCode == 401) {
-    //     return [];
-    //   }
-    // }
-    // catch (e) {
-    //   // throw Exception('Error: $e');
-    //   return [];
-    // }
-    // return [];
   }
 
   // Function to get Servers
+  Future<List> getServers() async {
+    final response = await _get('servers/get');
+    final serversList = json.decode(response.body);
+    return serversList;
+  }
+
+
+  Future<Map<String, dynamic>> getInfoAboutServer({String ip = '', String port = ''}) async {
+    // print(Uri.parse('https://api.mcstatus.io/v2/status/java/$ip:$port'));
+    final response = await http.get(Uri.parse('https://api.mcstatus.io/v2/status/java/$ip:$port'));
+    return json.decode(response.body);
+  }
+
+
+
+
+
+
 
 }

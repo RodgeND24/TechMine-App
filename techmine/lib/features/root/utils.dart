@@ -126,6 +126,7 @@ class TopMenu extends StatefulWidget {
 
 class _TopMenuState extends State<TopMenu> {
 
+
   final GlobalKey containerKey = GlobalKey();
   double containerWidth = 1000;
 
@@ -268,7 +269,7 @@ class _TopMenuState extends State<TopMenu> {
                 ),
                 PopupMenuButton(
                     icon: (authProvider.isLoggedIn && authProvider.isInitialized) 
-                          ? Image.network(authService.getFileUrl(authProvider.user?.username, 'avatar'), scale: 5,)
+                          ? Image.network(authService.getFileByName(authProvider.user?.username, 'avatar'), scale: 5,)
                           : Icon(Icons.person, color: Colors.white,),
                     color: foreignColor,
                     tooltip: '',
@@ -325,7 +326,30 @@ class _TopMenuState extends State<TopMenu> {
                       itemBuilder: (context) {
                         return [
                             _popupTopMenuItem(value: 'main', text: 'Главная'),
-                            _popupTopMenuItem(value: 'servers', text: 'Сервера'),
+                            _popupTopMenuItem(
+                              value: 'servers',
+                              text: 'Сервера',
+                              addChild: PopupMenuButton(
+                                color: foreignColor,
+                                tooltip: '',
+                                itemBuilder:(context) {
+                                  return [
+                                    _popupTopMenuItemIcon(value: 'TRPG', text: 'TechnoRPG'),
+                                    _popupTopMenuItemIcon(value: 'OOS', text: 'OOS'),
+                                    _popupTopMenuItemIcon(value: 'Create', text: 'Create'),
+                                  ];
+                                },
+                                elevation: 2,
+                                offset: Offset(220, 0),
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'TRPG': context.router.push(ServerRoute(name: 'TechnoRPG'));
+                                    case 'OOS': context.router.push(ServerRoute(name: 'OOS'));
+                                    case 'Create': context.router.push(ServerRoute(name: 'Create'));
+                                  }
+                                },
+                              ),
+                            ),
                             _popupTopMenuItem(value: 'donate', text: 'Донат'),
                             _popupTopMenuItem(value: 'help', text: 'Помощь'),
                             _popupTopMenuItem(value: 'contacts', text: 'Соцсети'),
@@ -336,7 +360,6 @@ class _TopMenuState extends State<TopMenu> {
                       onSelected: (value) {
                         switch (value) {
                           case 'main': context.router.push(MainRoute());
-                          case 'servers': context.router.push(ServersInfoRoute());
                           case 'donate': context.router.push(DonateRoute());
                           case 'help': context.router.push(HelpRoute());
                           case 'contacts': context.router.push(ContactsRoute());
@@ -352,7 +375,7 @@ class _TopMenuState extends State<TopMenu> {
                   children: [
                     PopupMenuButton(
                       icon: (authProvider.isLoggedIn && authProvider.isInitialized) 
-                            ? Image.network(authService.getFileUrl(authProvider.user?.username, 'avatar'), scale: 5,)
+                            ? Image.network(authService.getFileByName(authProvider.user?.username, 'avatar'), scale: 5,)
                             : Icon(Icons.person, color: Colors.white,),
                       color: foreignColor,
                       tooltip: '',
@@ -425,7 +448,7 @@ Widget startGameButton({required BuildContext context, double textSize = 22}) {
     );
 }
 
-Widget commonUnderLineButton({String text ='', double textSize = 15, String link = ''}) {
+Widget commonUnderLineButton({required BuildContext context, String text ='', double textSize = 15, String link = '', ServerRoute? navigateTo}) {
   return Flexible(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10),
@@ -440,6 +463,9 @@ Widget commonUnderLineButton({String text ='', double textSize = 15, String link
             if (link != '') {
               web.window.open(link, '_blank');
             }
+            if (navigateTo != null) {
+              context.router.push(navigateTo);
+            }
           },
           style: getStyleByParent,
           child: Text(text, 
@@ -453,7 +479,7 @@ Widget commonUnderLineButton({String text ='', double textSize = 15, String link
     );
 }
 
-PopupMenuItem _popupTopMenuItem({required String value, required String text}) {
+PopupMenuItem _popupTopMenuItem({required String value, required String text, dynamic addChild = null}) {
   return PopupMenuItem(
                       value: value,
                       padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
@@ -462,7 +488,8 @@ PopupMenuItem _popupTopMenuItem({required String value, required String text}) {
                         child: Row(
                           children: [
                             // SizedBox(width: 20,),
-                            Text(text, style: TextStyle(color: Colors.white, fontSize: 20))
+                            Text(text, style: TextStyle(color: Colors.white, fontSize: 20)),
+                            if (addChild != null) addChild
                           ],
                         ),
                       ),

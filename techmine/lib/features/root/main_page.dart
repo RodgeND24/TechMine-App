@@ -1,7 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:techmine/features/common_pages/server_page.dart';
 import 'package:techmine/features/root/utils.dart';
+import 'package:techmine/features/routing/app_route.dart';
 import 'package:techmine/services/auth/auth_service.dart';
+import 'package:techmine/services/auth/models/news_data.dart';
+import 'package:techmine/services/auth/models/servers_data.dart';
 
 @RoutePage()
 class MainPage extends StatefulWidget {
@@ -13,71 +17,113 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
-  // final List<String> _infoCards = ['Серверы', 'Помощь', 'Донат'];
-  // int _infoCardsCount = 0;
-  // final PageController _controller = PageController(viewportFraction: 1);
-  // int _currentInfoCard = 0;
+  int? _expandedCardIndex;
 
   double _scale = 1.0;
 
+  List<dynamic> _onlineByServers = [];
   int _onlineUsers = 0;
   int _totalUsers = 0;
+  String _serverInfoError = '';
 
-  List<dynamic>? _news = [];
+  List<dynamic> _news = [];
   int _newsCount = 0;
+  String _newsError = '';
 
-  List<String> _servers = [];
+  List<dynamic> _servers = [];
   int _serversCount = 0;
+  String _serverError = '';
 
   final authService = AuthService();
 
-  void checkNews() async {
-    // _news = ['Наполнение сайта', 'Доработка лаунчера', 'Создание сборки'];
-    _news = await authService.getNews();
-    _newsCount = _news!.length;
+  Future<void> checkNews() async {
+    try {
+      final news = await authService.getNews();
+      setState(() {
+        _news = news;
+        _newsCount = _news.length;
+        for (var i = 0; i < _newsCount; i++) {
+          _news[i] = NewsData.fromJson(_news[i]);
+        }
+      });
+    }
+    catch (e) {
+      setState(() {
+        _newsError = e.toString();
+        print(_newsError);
+        _news = [];
+        _newsCount = 0;
+      });
+    }
   }
 
-  void checkServers() {
-    _servers = ['TechnoRPG', 'OOS'];
-    _serversCount = _servers.length;
+  Future<void> checkServers() async {
+    try {
+      final servers = await authService.getServers();
+      setState(() {
+        _servers = servers;
+        _serversCount = _servers.length;
+        for (var i = 0; i < _serversCount; i++) {
+          _servers[i] = ServersData.fromJson(_servers[i]);
+        }
+      });
+    }
+    catch (e) {
+      setState(() {
+        _serverError = e.toString();
+        print(_serverError);
+        _servers = [];
+        _serversCount = 0;
+      });
+    }
   }
 
+  Future<void> checkTotalOnline() async {
+    try {
+      List<dynamic> onlineData = [];
+      int onlineUsers = 0;
+      int totalUsers = 0;
+
+      for (var server in _servers) {
+        final result = await authService.getInfoAboutServer(ip: server.ip, port: server.port);
+
+        final serverInfo = SingleServerInfo.fromJson(result);
+        onlineData.add(serverInfo);
+        onlineUsers += serverInfo.online_players;
+        totalUsers += serverInfo.max_players;
+      }
+
+      setState(() {
+        _onlineByServers = onlineData;
+        _onlineUsers = onlineUsers;
+        _totalUsers = totalUsers;
+      });
+    }
+    catch (e) {
+      setState(() {
+        _serverInfoError = e.toString();
+        print(_serverInfoError);
+        _onlineByServers = [];
+        _onlineUsers = 0;
+        _totalUsers = 0;
+      });
+    }
+
+  }
+
+  Future<void> initializeData() async {
+    await checkNews();
+    await checkServers();
+    await checkTotalOnline();
+  }
 
   @override
   void initState() {
     super.initState();
 
-    checkNews();
-    checkServers();
-
-    // setState(() {
-    //     _infoCardsCount = _infoCards.length;
-    //   }
-    // );
-
-    // startAutoScroll();
+    initializeData();
   }
 
-  // void startAutoScroll() {
-  //   Future.delayed(Duration(seconds: 3), () {
-  //     if (_controller.hasClients) {
-  //       final nextPage = _currentInfoCard + 1;
-  //       if (nextPage >= _infoCardsCount) {
-  //         _controller.animateToPage(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-  //       }
-  //       else {
-  //         _controller.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-  //       }
-  //       startAutoScroll();
-  //     }
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _controller.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -116,30 +162,48 @@ class _MainPageState extends State<MainPage> {
                 
                 CustomSection(
                   content: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CustomMainText(text: 'Новости',size: 35),
-                          SizedBox(width: 20,),
-                          commonUnderLineButton(text: 'все новости', textSize: 15, link: 'https://t.me/techmineserver'),
+                          CustomMainText(text: 'Новости', size: 35),
+                          SizedBox(width: 20),
+                          commonUnderLineButton(context: context, text: 'все новости', textSize: 15, link: 'https://t.me/techmineserver'),
                           Icon(Icons.keyboard_arrow_right_outlined),
                         ],
                       ),
+                      SizedBox(height: 16),
                       Container(
-                        constraints: BoxConstraints(minHeight: 200, maxHeight: 400),
                         width: 960,
                         child: (_newsCount != 0) ?
                         ListView.builder(
-                          scrollDirection: Axis.horizontal,
+                          scrollDirection: Axis.vertical, 
+                          shrinkWrap: true, 
+                          physics: NeverScrollableScrollPhysics(), 
                           itemCount: _newsCount,
-                          physics: ScrollPhysics(),
-                          itemBuilder:(context, index) {
-                            return NewsCard(text: 'News: ${_news![index]}');
+                          itemBuilder: (context, index) {
+                            return NewsCard(
+                              news: _news[index],
+                              onExpansionChanged: (isExpanded) {
+                                setState(() {
+                                  if (isExpanded) {
+                                    _expandedCardIndex = index;
+                                  } else if (_expandedCardIndex == index) {
+                                    _expandedCardIndex = null;
+                                  }
+                                });
+                              },
+                              isExpanded: _expandedCardIndex == index,
+                            );
                           },
                         )
-                      
-                      : Center (child: CustomMainText(text: 'Новый новостей пока нет', size: 25),) 
+                        : Center(
+                            child: CustomMainText(
+                              text: 'Новых новостей пока нет\n $_newsError', 
+                              size: 25
+                            ),
+                          ) 
                       )
                     ],
                   )
@@ -153,13 +217,13 @@ class _MainPageState extends State<MainPage> {
                       Container(
                         constraints: BoxConstraints(minHeight: 200, maxHeight: 400),
                         width: 960,
-                        child: (_serversCount != 0) ?
+                        child: (_serversCount != 0 && _onlineByServers.length == _serversCount) ?
                         ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: _serversCount,
                           physics: ScrollPhysics(),
                           itemBuilder:(context, index) {
-                            return ServerCard(text: 'Server: ${_servers[index]}');
+                            return ServerCard(server: _servers[index], onlineInfo: _onlineByServers[index], );
                             
                           },
                         )
@@ -179,8 +243,8 @@ class _MainPageState extends State<MainPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CustomAdditionalText(text: 'Не забудь установить java:', size: 15),
-                          commonUnderLineButton(text: 'x32'),
-                          commonUnderLineButton(text: 'x64')
+                          commonUnderLineButton(context: context, text: 'x32'),
+                          commonUnderLineButton(context: context, text: 'x64')
                         ],
                       ),
                       Row(
@@ -204,49 +268,118 @@ class _MainPageState extends State<MainPage> {
 
 
 class NewsCard extends StatefulWidget {
+  NewsCard({required NewsData this.news, required this.onExpansionChanged, required this.isExpanded});
 
-  NewsCard({required String this.text});
+  final NewsData news;
+  final Function(bool) onExpansionChanged;
+  final bool isExpanded;
 
-  final String text;
   @override
   _NewsCardState createState() => _NewsCardState();
 }
 
 class _NewsCardState extends State<NewsCard> {
-
   bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService();
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedScale(
-        scale: _isHovered? 1.1 : 1.0, 
-        duration: Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        child: Card(
-          color: foreignColor,
-          shadowColor: Colors.blueGrey,
-          margin: EdgeInsets.all(10),
-          child: SizedBox(
-            // constraints: BoxConstraints.expand(width: 400, height: 200),
-            width: 300,
-            child: CustomMainText(text: widget.text, size: 20),
-          )
-        )
+      child: GestureDetector(
+        onTap: () {
+          widget.onExpansionChanged(!widget.isExpanded);
+        },
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: double.infinity,
+          child: AnimatedScale(
+            scale: _isHovered ? 1.02 : 1.0, 
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              color: foreignColor,
+              shadowColor: Colors.blueGrey,
+              margin: EdgeInsets.all(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Container(
+                    width: double.infinity,
+                    height: 200, 
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(authService.getFileByUrl(widget.news.image_url)),
+                        fit: BoxFit.cover
+                      )
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomMainText(text: widget.news.title),
+                            SizedBox(height: 8),
+                            CustomAdditionalText(text: widget.news.description),
+                          ],
+                        ),
+                        
+                        if (widget.isExpanded) ...[
+                          SizedBox(height: 16),
+                          CustomAdditionalText(text: widget.news.content),
+                        ],
+                        
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomAdditionalText(text: getTimeData(widget.news.created_at)),
+                            CustomAdditionalText(
+                              text: widget.isExpanded ? 'Свернуть' : 'Читать далее',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
-    
-    
+  }
+
+  String getTimeData(DateTime rawDateTime) {
+    String result = '${rawDateTime.day}.${rawDateTime.month}.${rawDateTime.year}., ${rawDateTime.hour}:${rawDateTime.minute}';
+    return result;
   }
 }
 
 class ServerCard extends StatefulWidget {
 
-  ServerCard({required String this.text});
+  ServerCard({required ServersData this.server, required SingleServerInfo this.onlineInfo});
 
-  final String text;
+  final ServersData server;
+  final SingleServerInfo onlineInfo;
   @override
   _ServerCardState createState() => _ServerCardState();
 }
@@ -257,21 +390,65 @@ class _ServerCardState extends State<ServerCard> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService();
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedScale(
-        scale: _isHovered? 1.1 : 1.0, 
+        scale: _isHovered? 1.05 : 1.0, 
         duration: Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         child: Card(
           color: foreignColor,
           shadowColor: Colors.blueGrey,
           margin: EdgeInsets.all(10),
-          child: SizedBox(
-            // constraints: BoxConstraints.expand(width: 400, height: 200),
-            width: 300,
-            child: CustomMainText(text: widget.text, size: 20),
+          child: Column(
+            children: [
+              // Image and short information
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)
+                  ),
+                  image: DecorationImage(
+                    image: NetworkImage(authService.getFileByUrl(widget.server.image_url)),
+                    fit: BoxFit.cover
+                  )
+                ),
+                width: 300,
+                height: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      // Title and version
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.asset('assets/images/icons/gear.png', color: Colors.red,),
+                          CustomMainText(text: widget.server.name, size: 20),
+                          Column(
+                            children: [
+                              CustomAdditionalText(text: 'Версия игры:'),
+                              CustomAdditionalText(text: widget.server.version)
+                            ],
+                          )
+                        ],
+                      ),
+                      // Short description of server
+                      SizedBox(height: 16,),
+                      CustomAdditionalText(text: widget.server.short_description)
+                    ],
+                  )
+                )
+              ),
+
+              // navigation to page with full info about server
+              SizedBox(height: 16,),
+              commonUnderLineButton(context: context, text: 'Подробнее', navigateTo: ServerRoute(name: widget.server.name))
+            ],
           )
         )
       ),

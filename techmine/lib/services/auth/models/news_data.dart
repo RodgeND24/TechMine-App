@@ -9,6 +9,6 @@ class NewsData {
 
   factory NewsData.fromJson(Map<String, dynamic> jsonData) {
     return NewsData(title: jsonData['title'], description: jsonData['description'], content: jsonData['content'], 
-                    image_url: jsonData['image_url'], created_at: jsonData['created_at']);
+                    image_url: jsonData['image_url'], created_at: DateTime.parse(jsonData['created_at']));
   }
 }
