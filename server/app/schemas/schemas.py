@@ -183,3 +183,8 @@ class ServerPublic(ServerAdd):
 
     class Config:
         from_attributes = True
+
+class ServerStatus(BaseModel):
+    online: bool
+    online_players: int
+    max_players: int

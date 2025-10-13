@@ -290,8 +290,7 @@ class AuthService {
 
 
   Future<Map<String, dynamic>> getInfoAboutServer({String ip = '', String port = ''}) async {
-    // print(Uri.parse('https://api.mcstatus.io/v2/status/java/$ip:$port'));
-    final response = await http.get(Uri.parse('https://api.mcstatus.io/v2/status/java/$ip:$port'));
+    final response = await _get('servers/status/$ip:$port');
     return json.decode(response.body);
   }
 

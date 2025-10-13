@@ -143,16 +143,8 @@ class _MainPageState extends State<MainPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           startGameButton(context: context, textSize: 30),
-                          CustomAdditionalText(text: 'Сейчас онлайн: ', size: 20),
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(color: Colors.lightGreenAccent, blurRadius: 5),
-                              ]
-                            ),
-                            child: Icon(Icons.circle, color: Colors.green, size: 15,),
-                          ),
+                          CustomAdditionalText(text: 'Текущий онлайн: ', size: 20),
+                          OnlineIndicator,
                           CustomMainText(text: ' $_onlineUsers из $_totalUsers', size: 20)
                         ]
                       ),
@@ -417,10 +409,11 @@ class _ServerCardState extends State<ServerCard> {
                   )
                 ),
                 width: 300,
-                height: 300,
+                height: 250,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Title and version
                       Row(
@@ -428,7 +421,23 @@ class _ServerCardState extends State<ServerCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Image.asset('assets/images/icons/gear.png', color: Colors.red,),
-                          CustomMainText(text: widget.server.name, size: 20),
+                          Column(
+                            children: [
+                              CustomMainText(text: widget.server.name, size: 20),
+                              Row(
+                                children: [
+                                  if (widget.onlineInfo.online == true) ...[
+                                    CustomAdditionalText(text: 'Сервер онлайн '),
+                                    OnlineIndicator
+                                  ]
+                                  else ...[
+                                    CustomAdditionalText(text: 'Сервер оффлайн '),
+                                    OfflineIndicator
+                                  ]
+                                ],
+                              )
+                            ],
+                          ),
                           Column(
                             children: [
                               CustomAdditionalText(text: 'Версия игры:'),
@@ -439,15 +448,21 @@ class _ServerCardState extends State<ServerCard> {
                       ),
                       // Short description of server
                       SizedBox(height: 16,),
-                      CustomAdditionalText(text: widget.server.short_description)
+                      CustomAdditionalText(text: widget.server.short_description),
                     ],
                   )
                 )
               ),
 
               // navigation to page with full info about server
-              SizedBox(height: 16,),
-              commonUnderLineButton(context: context, text: 'Подробнее', navigateTo: ServerRoute(name: widget.server.name))
+              SizedBox(height: 16),
+              commonUnderLineButton(context: context, text: 'Подробнее', navigateTo: ServerRoute(name: widget.server.name)),
+
+              if (widget.onlineInfo.online == true) ...[
+                SizedBox(height: 16),
+                CustomAdditionalText(text: 'Сейчас играют: ${widget.onlineInfo.online_players} из ${widget.onlineInfo.max_players}'),
+              ]
+
             ],
           )
         )

@@ -28,6 +28,27 @@ bool userIsLoggedIn = false;
 
 bool isWidth = true;
 
+Widget OnlineIndicator = DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(color: Colors.lightGreenAccent, blurRadius: 5),
+                              ]
+                            ),
+                            child: Icon(Icons.circle, color: Colors.green, size: 15,),
+                          );
+
+Widget OfflineIndicator = DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(color: Colors.redAccent, blurRadius: 5),
+                              ]
+                            ),
+                            child: Icon(Icons.circle, color: Colors.red, size: 15,),
+                          );
+
+
 var ButtonStyle = TextButton.styleFrom(
   foregroundColor: Colors.white ,
   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),

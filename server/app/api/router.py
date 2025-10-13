@@ -8,6 +8,7 @@ from typing import Annotated, List
 from core.security import get_current_user
 from api.file_router import upload_news_image, upload_server_image
 from core.utils import NEWS_DIR, SERVERS_DIR
+from mcstatus import JavaServer
 
 router = APIRouter(prefix="/api")
 
@@ -358,6 +359,19 @@ async def delete_news_image(news_id: int, current_user: models.Users = Depends(g
         return HTTPException(status_code=403, detail='Access deny')
 
 '''Servers'''
+@router.get(
+        '/servers/status/{ip}:{port}',
+        tags=['Servers'],
+        summary="Get status of server",
+        )
+async def server_status(ip: str, port: str):
+    try:
+        server = await JavaServer.async_lookup(address=f'{ip}:{port}')
+        status = await server.async_status()
+        return schemas.ServerStatus(online=True, online_players=status.players.online, max_players=status.players.max)
+    except:
+        return schemas.ServerStatus(online=False, online_players=0, max_players=0)
+
 @router.get(
         "/servers/get",
         tags=['Servers'],

@@ -27,7 +27,7 @@ class SingleServerInfo {
   SingleServerInfo({required this.online, required this.online_players, required this.max_players});
 
   factory SingleServerInfo.fromJson(Map<String, dynamic> jsonData) {
-    return SingleServerInfo(online: jsonData['online'], online_players: jsonData['players']['online'], max_players: jsonData['players']['max']);
+    return SingleServerInfo(online: jsonData['online'], online_players: jsonData['online_players'], max_players: jsonData['max_players']);
   }
 
 
