@@ -118,7 +118,7 @@ class AuthService {
     final response = await http.post(
         Uri.parse('$_baseUrl/auth/verify-token'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'token': accessToken!, 'is_refresh': '0'})
+        body: json.encode({'token': accessToken, 'is_refresh': '0'})
       );
     
     if (response.statusCode == 200) { return false; }

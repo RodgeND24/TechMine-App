@@ -154,6 +154,7 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       } else {
+        await _authService.logout();
         _isLoggedIn = false;
         _user = null;
         _isCheckingAuth = false;
@@ -161,6 +162,7 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
+      await _authService.logout();
       _error = e.toString();
       _isLoggedIn = false;
       _user = null;
