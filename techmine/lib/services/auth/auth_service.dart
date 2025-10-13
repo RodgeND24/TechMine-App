@@ -84,7 +84,7 @@ class AuthService {
 
   /* Functions for tokens */
   Future<void> saveTokens(Token token) async {
-    if (_isWeb) {
+    if (!_isWeb) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('accessToken', token.access_token);
       await prefs.setString('refreshToken', token.refresh_token);
@@ -96,7 +96,7 @@ class AuthService {
   }
 
   Future<String?> getAccessToken() async {
-    if (_isWeb) {
+    if (!_isWeb) {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString('accessToken');
     }
@@ -104,7 +104,7 @@ class AuthService {
   }
 
   Future<String?> getRefreshToken() async {
-    if (_isWeb) {
+    if (!_isWeb) {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString('refreshToken');
     }
