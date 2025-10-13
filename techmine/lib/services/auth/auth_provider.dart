@@ -42,6 +42,7 @@ class AuthProvider extends ChangeNotifier {
     }
     finally {
       _isCheckingAuth = false;
+      _isInitialized = true;
       notifyListeners();
     }
   }
