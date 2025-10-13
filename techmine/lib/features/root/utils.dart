@@ -98,37 +98,39 @@ class _DefaultEmptyPageState extends State<DefaultEmptyPage> {
                           // topImage,
                           TopMenu(),
                           Text(widget.text, style: TextStyle(color: Colors.white)),
-                          widget.child
+                          widget.child,
+                          Footer()
                         ],
                       ),
                     ]
                   )
                 ),
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Container(
-                    constraints: BoxConstraints(maxHeight: 300),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('© TechMine 2025. Все права защищены', style: footerTextStyle,),
-                          ],
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     Text('ИП'),
-                        //     Text('Почта')
-                        //   ],
-                        // ),
-                      ],
+                // SliverFillRemaining(
+                //   hasScrollBody: false,
+                //   child: Container(
+                //     constraints: BoxConstraints(maxHeight: 300),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.end,
+                //       children: [
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.center,
+                //           children: [
+                //             Text('© TechMine 2025. Все права защищены', style: footerTextStyle,),
+                //           ],
+                //         ),
+                //         // Row(
+                //         //   mainAxisAlignment: MainAxisAlignment.center,
+                //         //   children: [
+                //         //     Text('ИП'),
+                //         //     Text('Почта')
+                //         //   ],
+                //         // ),
+                //       ],
                       
-                    )
-                  ),
-                )
+                //     )
+                //   ),
+                // ),
+
               ],
             ),
       ),
@@ -544,7 +546,7 @@ Container CustomSection({Widget? content}) {
       width: 960,
       // height: height,
       margin: EdgeInsets.only(bottom: 30),
-      padding: EdgeInsets.only(top: 50, bottom: 50),
+      padding: EdgeInsets.only(bottom: 50),
       decoration: BoxDecoration(
         // color: Colors.white,
         border: Border(bottom: BorderSide(color: mainColor, width: 2))
@@ -553,7 +555,7 @@ Container CustomSection({Widget? content}) {
     );
 }
 
-Widget CustomMainText({String text ='', double size = 20, TextAlign align = TextAlign.start}) {
+Container CustomMainText({String text ='', double size = 20, TextAlign align = TextAlign.start}) {
   return Container(
     child: Text(text,
       textAlign: align,
@@ -574,6 +576,31 @@ Text CustomAdditionalText({String text ='', double size = 15, TextAlign align = 
       fontSize: size, fontFamily: 'Nunito', fontWeight: FontWeight.w500,
       shadows: [Shadow(color: Colors.black, blurRadius: 10, offset: Offset(0, 10))]
     )
+  );
+}
+
+Container Footer() {
+  return CustomSection(
+    content: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('© TechMine 2025. Все права защищены', style: footerTextStyle,),
+          ],
+        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text('ИП'),
+        //     Text('Почта')
+        //   ],
+        // ),
+      ],
+      
+    )
+
   );
 }
 
